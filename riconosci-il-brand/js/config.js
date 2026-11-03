@@ -10,6 +10,6 @@
  * Si può forzare la modalità prova anche a Supabase collegato aggiungendo ?prova all'indirizzo.
  */
 window.ZR_CONFIG = {
-  supabaseUrl: "",
-  supabaseKey: ""
+  supabaseUrl: "https://vltuppjolpbqaezhaqef.supabase.co",
+  supabaseKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZsdHVwcGpvbHBicWFlemhhcWVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM3MzQ2MDUsImV4cCI6MjEwOTMxMDYwNX0.cD-ocV7DJjMxq-SXUydUPpjeQaC4PVU3IYuhkSxSc0E"
 };
