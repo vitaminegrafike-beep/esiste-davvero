@@ -205,6 +205,7 @@
     $$("[data-phase-question]", screen).forEach(function (el) { el.hidden = phase !== "question"; });
     $$("[data-phase-reveal]", screen).forEach(function (el) { el.hidden = phase !== "reveal"; });
     $("[data-pill]").hidden = phase !== "reveal";
+    if (phase !== "reveal") $("[data-media]").classList.remove("is-correct", "is-wrong");
   }
 
   function renderRound(i, phase) {
@@ -274,7 +275,11 @@
     var correct = chosen === r.exists;
 
     var pill = $("[data-pill]");
-    pill.textContent = r.exists ? "Esiste" : "Non esiste";
+    $("[data-pill-text]").textContent = r.exists ? "Esiste" : "Non esiste";
+    $("[data-pill-icon]").setAttribute("href", correct ? "#i-tick" : "#i-miss");
+    var media = $("[data-media]");
+    media.classList.toggle("is-correct", correct);
+    media.classList.toggle("is-wrong", !correct);
 
     var verdict = $("[data-verdict]");
     $("[data-verdict-text]").textContent = correct ? "Esatto." : "Non proprio.";

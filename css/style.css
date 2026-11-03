@@ -276,13 +276,26 @@ html[data-mode="landscape"] .landscape-block {
   font-family: var(--serif); font-size: 22px; font-weight: 400; letter-spacing: 0.04em; text-transform: none;
 }
 .pill {
-  position: absolute; top: var(--s4); left: var(--gutter);
-  padding: var(--s2) var(--s4);
-  border: 1px solid var(--text); border-radius: var(--r-pill);
-  background: rgba(8, 11, 11, 0.72);
-  font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+  position: absolute; top: var(--s4); left: var(--gutter); z-index: 1;
+  display: inline-flex; align-items: center; gap: var(--s2);
+  padding: 10px var(--s4) 10px 14px;
+  border-radius: var(--r-pill);
+  background: var(--text); color: var(--bg);
+  box-shadow: 0 4px 16px rgba(8, 11, 11, 0.35);
+  font-size: 13px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; line-height: 1;
   animation: reveal-in var(--dur-reveal) var(--ease) both;
 }
+.pill .icon { width: 16px; height: 16px; flex: none; }
+.media.is-correct .pill { background: var(--correct); }
+.media.is-wrong .pill { background: var(--wrong); }
+/* Cornice sottile sull'immagine, nel colore dell'esito */
+.media::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  box-shadow: inset 0 0 0 0 transparent;
+  transition: box-shadow var(--dur-base) var(--ease);
+}
+.media.is-correct::after { box-shadow: inset 0 0 0 3px var(--correct); }
+.media.is-wrong::after { box-shadow: inset 0 0 0 3px var(--wrong); }
 
 .round__body { padding-top: var(--s6); padding-bottom: var(--s8); gap: 0; }
 .round__info { display: grid; gap: 0; }
