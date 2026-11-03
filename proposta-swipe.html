@@ -6,79 +6,78 @@
   <meta name="theme-color" content="#080B0B">
   <meta name="color-scheme" content="dark">
   <meta name="robots" content="noindex">
-  <title>Proposta swipe · Esiste davvero?</title>
+  <title>Proposta cursore · Esiste davvero?</title>
   <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/style.css">
   <style>
-    /* Proposta isolata: non tocca il gioco. */
-    .sw { display: flex; flex-direction: column; min-height: 100svh; height: 100svh; max-width: 430px; margin: 0 auto;
-          padding-top: env(safe-area-inset-top); overflow: hidden; }
-    .sw__header { padding: var(--s4) var(--gutter) var(--s3); display: grid; gap: var(--s3); }
-    .sw__top { display: flex; align-items: center; gap: var(--s3); }
-    .sw__top .logo { width: 34px; height: 20px; }
-    .sw__stage { flex: 1; min-height: 0; position: relative; padding: 0 var(--gutter); }
-    .card {
-      position: relative; height: 100%; border-radius: 20px; overflow: hidden; background: var(--surface);
-      touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: grab;
-      will-change: transform; transform-origin: 50% 110%;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    /* Proposta isolata: non tocca il gioco. Layout identico al round, cambia solo il controllo in basso. */
+    .sw { display: flex; flex-direction: column; height: 100svh; max-width: 430px; margin: 0 auto; padding-top: env(safe-area-inset-top); }
+    .sw .media { flex: 1 1 auto; min-height: 170px; height: auto; max-height: min(125vw, 537px); }
+    .sw .media img { opacity: 1; }
+    .sw .round__body { flex: 0 0 auto; padding-bottom: var(--s6); }
+    .sw .round__info { gap: 0; }
+    .sw .round__product { margin-top: var(--s2); }
+    .sw [data-desc] { margin-top: var(--s4); }
+    .sw [data-cat] { margin-top: var(--s6); }
+    .sw .actions { position: static; background: none; }
+
+    /* ---- Cursore a scorrimento ---- */
+    .slide {
+      --x: 0;              /* posizione del cursore da -1 (sinistra) a 1 (destra) */
+      --knob: 52px;
+      position: relative; height: 60px; border-radius: var(--r-pill);
+      background: var(--surface-2); border: 1px solid var(--border-strong);
+      overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none;
     }
-    .card.is-dragging { cursor: grabbing; }
-    .card.is-settling { transition: transform 420ms var(--ease); }
-    .card img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; -webkit-user-drag: none; }
-    .card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-                   box-shadow: inset 0 0 0 0 transparent; transition: box-shadow var(--dur-base) var(--ease); }
-    .card.is-correct::after { box-shadow: inset 0 0 0 3px var(--correct); }
-    .card.is-wrong::after { box-shadow: inset 0 0 0 3px var(--wrong); }
-    /* Timbri che compaiono durante il trascinamento */
-    .stamp {
-      position: absolute; top: var(--s6); padding: 10px var(--s4); border-radius: var(--r-pill);
-      font-size: 14px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; line-height: 1;
-      background: var(--text); color: var(--bg); opacity: 0; transform: scale(0.9);
-      box-shadow: 0 4px 16px rgba(8, 11, 11, 0.35); pointer-events: none;
+    /* Riempimento che cresce dal centro verso il lato scelto */
+    .slide__fill {
+      position: absolute; top: 0; bottom: 0; left: 50%; width: 50%;
+      background: linear-gradient(to right, rgba(243, 239, 231, 0.04), rgba(243, 239, 231, 0.22));
+      transform-origin: left center; transform: scaleX(max(var(--x), 0));
     }
-    .stamp--yes { left: var(--s6); }
-    .stamp--no { right: var(--s6); }
-    /* Esito dopo la scelta (stesso trattamento del gioco) */
-    .verdict-pill { position: absolute; top: var(--s4); left: var(--s4); display: inline-flex; align-items: center; gap: var(--s2);
+    .slide__fill--no {
+      left: 0; transform-origin: right center; transform: scaleX(max(calc(var(--x) * -1), 0));
+      background: linear-gradient(to left, rgba(243, 239, 231, 0.04), rgba(243, 239, 231, 0.22));
+    }
+    .slide__label {
+      position: absolute; top: 0; bottom: 0; display: flex; align-items: center; gap: var(--s2);
+      padding: 0 var(--s4) 0 18px; background: none; border: 0; color: var(--text); cursor: pointer;
+      font: 600 13px/1 var(--sans); letter-spacing: 0.08em; text-transform: uppercase;
+      transition: opacity var(--dur-press) var(--ease);
+    }
+    .slide__label svg { width: 16px; height: 16px; flex: none; opacity: 0.7; }
+    .slide__label--no { left: 0; opacity: calc(1 - max(var(--x), 0) * 1.4); }
+    .slide__label--no svg { transform: scaleX(-1); }
+    .slide__label--yes { right: 0; padding: 0 18px 0 var(--s4); opacity: calc(1 + min(var(--x), 0) * 1.4); }
+    .slide__knob {
+      position: absolute; top: 50%; left: 50%; width: var(--knob); height: var(--knob); margin: calc(var(--knob) / -2) 0 0 calc(var(--knob) / -2);
+      border-radius: 50%; border: 0; background: var(--text); color: var(--bg);
+      display: grid; place-items: center; cursor: grab;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+      transform: translateX(calc(var(--x) * var(--travel, 120px))) scale(var(--press, 1));
+    }
+    .slide__knob svg { width: 26px; height: 26px; }
+    .slide.is-dragging .slide__knob { cursor: grabbing; --press: 1.06; }
+    .slide.is-settling, .slide.is-settling * { transition: transform 360ms var(--ease), opacity 360ms var(--ease); }
+    .slide.is-done { pointer-events: none; }
+    .slide__hint { margin-top: var(--s3); text-align: center; }
+    .slide__knob:focus-visible, .slide__label:focus-visible { outline: 2px solid var(--text); outline-offset: 3px; }
+
+    /* Invito iniziale: il cursore oscilla una volta */
+    @keyframes nudge { 0%, 100% { --x: 0; } 30% { --x: -0.22; } 65% { --x: 0.22; } }
+    @property --x { syntax: "<number>"; inherits: true; initial-value: 0; }
+    .slide.is-nudging { animation: nudge 1500ms var(--ease) 700ms both; }
+
+    /* Esito sull'immagine (come nel gioco) */
+    .verdict-pill { position: absolute; top: var(--s4); left: var(--gutter); display: inline-flex; align-items: center; gap: var(--s2);
       padding: 10px var(--s4) 10px 14px; border-radius: var(--r-pill); color: var(--bg);
       font-size: 13px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; line-height: 1;
       box-shadow: 0 4px 16px rgba(8, 11, 11, 0.35); animation: reveal-in var(--dur-reveal) var(--ease) both; }
     .verdict-pill .icon { width: 16px; height: 16px; }
-    .card.is-correct .verdict-pill { background: var(--correct); }
-    .card.is-wrong .verdict-pill { background: var(--wrong); }
+    .media.is-correct .verdict-pill { background: var(--correct); }
+    .media.is-wrong .verdict-pill { background: var(--wrong); }
 
-    .sw__info { padding: var(--s6) var(--gutter) var(--s2); display: grid; min-height: 0; }
-    .sw__info .round__product { margin-top: var(--s2); }
-    .sw__info [data-desc] { margin-top: var(--s3); }
-    .sw__info [data-cat] { margin-top: var(--s4); }
-    .sw__info .verdict { margin-bottom: var(--s2); }
-
-    .sw__actions { padding: var(--s4) var(--gutter) calc(var(--s4) + env(safe-area-inset-bottom)); }
-    .swipe-bar { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: var(--s3); }
-    .swipe-btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: var(--s2);
-      min-height: var(--btn-h); border-radius: var(--r-pill); border: 1px solid var(--border-strong);
-      background: var(--surface-2); color: var(--text); cursor: pointer;
-      font: 600 14px/1 var(--sans); letter-spacing: 0.08em; text-transform: uppercase;
-      transition: background var(--dur-press) var(--ease), color var(--dur-press) var(--ease), border-color var(--dur-press) var(--ease), transform var(--dur-press) var(--ease);
-    }
-    .swipe-btn svg { width: 18px; height: 18px; flex: none; }
-    .swipe-btn--no svg { transform: scaleX(-1); }
-    .swipe-btn.is-hot { background: var(--text); color: var(--bg); border-color: var(--text); transform: scale(1.03); }
-    .swipe-hint { font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); text-align: center; line-height: 1.3; }
-    .sw__actions .btn--primary { width: 100%; }
-
-    @keyframes nudge {
-      0%, 100% { transform: none; }
-      25% { transform: translateX(-26px) rotate(-2deg); }
-      60% { transform: translateX(26px) rotate(2deg); }
-    }
-    .card.is-nudging { animation: nudge 1400ms var(--ease) 600ms both; }
-
-    .proposal-note { position: fixed; left: 50%; bottom: calc(var(--s2) + env(safe-area-inset-bottom)); transform: translateX(-50%);
-      font-size: 11px; color: var(--text-muted); letter-spacing: 0.04em; pointer-events: none; white-space: nowrap; opacity: 0.7; }
-    @media (prefers-reduced-motion: reduce) { .card.is-nudging { animation: none; } .card.is-settling { transition-duration: 1ms; } }
+    @media (prefers-reduced-motion: reduce) { .slide.is-nudging { animation: none; } }
   </style>
 </head>
 <body>
@@ -87,40 +86,42 @@
     <symbol id="i-tick" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-miss" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8.5 12h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
     <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-both" viewBox="0 0 24 24"><path d="m9 7-5 5 5 5M15 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   </svg>
 
   <main class="sw">
-    <header class="sw__header">
-      <div class="sw__top"><svg class="logo" aria-hidden="true"><use href="#i-logo"/></svg><p class="t-meta" data-counter>Round 1 di 3</p></div>
+    <header class="round__header">
+      <div class="round__top"><span class="home" aria-hidden="true"><svg class="logo"><use href="#i-logo"/></svg></span><p class="t-meta" data-counter>Round 1 di 3</p></div>
       <div class="progress"><span class="progress__fill" data-progress></span></div>
     </header>
 
-    <div class="sw__stage">
-      <div class="card is-nudging" data-card>
-        <img data-img src="" alt="" draggable="false">
-        <span class="stamp stamp--yes" data-stamp-yes>Esiste</span>
-        <span class="stamp stamp--no" data-stamp-no>Non esiste</span>
-      </div>
-    </div>
+    <figure class="media" data-media>
+      <img data-img src="" alt="" draggable="false">
+    </figure>
 
-    <section class="sw__info" aria-live="polite">
-      <div data-question>
+    <div class="screen__body round__body" aria-live="polite">
+      <div class="round__info" data-question>
         <h1 class="t-product" data-brand></h1>
         <p class="round__product" data-product></p>
         <p class="t-body muted" data-desc></p>
         <p class="t-meta accent" data-cat></p>
       </div>
-      <div data-reveal hidden>
+      <div class="round__reveal" data-reveal hidden>
         <p class="verdict t-meta" data-verdict><svg class="icon" aria-hidden="true"><use data-verdict-icon href="#i-tick"/></svg><span data-verdict-text></span></p>
         <h1 class="t-h1" data-reveal-title></h1>
         <p class="t-body muted" data-reveal-text></p>
       </div>
-    </section>
+    </div>
 
-    <div class="sw__actions">
-      <div class="swipe-bar" data-question-actions>
-        <button type="button" class="swipe-btn swipe-btn--no" data-answer="false"><svg aria-hidden="true"><use href="#i-arrow"/></svg>Non esiste</button>
-        <button type="button" class="swipe-btn swipe-btn--yes" data-answer="true">Esiste<svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+    <div class="actions">
+      <div data-question-actions>
+        <div class="slide is-nudging" data-slide role="group" aria-label="Questo prodotto esiste davvero?">
+          <span class="slide__fill slide__fill--no" aria-hidden="true"></span>
+          <span class="slide__fill" aria-hidden="true"></span>
+          <button type="button" class="slide__label slide__label--no" data-answer="false">Non esiste</button>
+          <button type="button" class="slide__label slide__label--yes" data-answer="true">Esiste</button>
+          <button type="button" class="slide__knob" data-knob aria-label="Trascina a sinistra per Non esiste, a destra per Esiste. Con la tastiera usa le frecce."><svg aria-hidden="true"><use href="#i-both"/></svg></button>
+        </div>
       </div>
       <button type="button" class="btn btn--primary" data-next hidden>Prossimo round <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
     </div>
@@ -134,11 +135,17 @@
       { exists: false, brand: "ORVYN", product: "O1", desc: "Un orologio senza lancette, numeri o display che comunica l’ora attraverso sequenze di vibrazioni sul polso.", cat: "Haptic Watch / Digital Wellbeing", img: "assets/images/08-orvyn-o1.webp", pos: "center 45%", alt: "Orologio con quadrante nero completamente vuoto, senza lancette.", title: "ORVYN O1 non esiste.", text: "Ce lo siamo inventato. Un orologio pensato per percepire il tempo senza doverlo guardare." }
     ];
     var $ = function (s) { return document.querySelector(s); };
-    var card = $("[data-card]"), img = $("[data-img]");
-    var yesStamp = $("[data-stamp-yes]"), noStamp = $("[data-stamp-no]");
-    var yesBtn = $(".swipe-btn--yes"), noBtn = $(".swipe-btn--no");
-    var i = 0, locked = false;
+    var slide = $("[data-slide]"), knob = $("[data-knob]"), media = $("[data-media]"), img = $("[data-img]");
+    var i = 0, locked = false, x = 0;
     var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function travel() { return (slide.clientWidth - 60) / 2; }   // corsa del cursore da centro a bordo
+    function setX(v) { x = Math.max(-1, Math.min(1, v)); slide.style.setProperty("--x", x); }
+    function settle(fn) {
+      slide.classList.add("is-settling");
+      fn();
+      setTimeout(function () { slide.classList.remove("is-settling"); }, reduce ? 0 : 360);
+    }
 
     function render() {
       var r = ROUNDS[i];
@@ -149,76 +156,69 @@
       $("[data-desc]").textContent = r.desc; $("[data-cat]").textContent = r.cat;
       $("[data-question]").hidden = false; $("[data-reveal]").hidden = true;
       $("[data-question-actions]").hidden = false; $("[data-next]").hidden = true;
-      card.classList.remove("is-correct", "is-wrong");
-      var old = card.querySelector(".verdict-pill"); if (old) old.remove();
-      setDrag(0); locked = false;
-    }
-
-    function setDrag(dx) {
-      var w = card.offsetWidth || 1, p = Math.max(-1, Math.min(1, dx / (w * 0.3)));
-      card.style.transform = dx ? "translateX(" + dx + "px) rotate(" + (dx / w * 12) + "deg)" : "";
-      yesStamp.style.opacity = Math.max(0, p); yesStamp.style.transform = "scale(" + (0.9 + Math.max(0, p) * 0.1) + ")";
-      noStamp.style.opacity = Math.max(0, -p); noStamp.style.transform = "scale(" + (0.9 + Math.max(0, -p) * 0.1) + ")";
-      yesBtn.classList.toggle("is-hot", p > 0.6); noBtn.classList.toggle("is-hot", p < -0.6);
+      media.classList.remove("is-correct", "is-wrong");
+      var old = media.querySelector(".verdict-pill"); if (old) old.remove();
+      slide.classList.remove("is-done"); setX(0); locked = false;
+      slide.style.setProperty("--travel", travel() + "px");
     }
 
     function answer(value) {
       if (locked) return; locked = true;
+      slide.classList.remove("is-nudging");
+      settle(function () { setX(value ? 1 : -1); });
+      slide.classList.add("is-done");
       var r = ROUNDS[i], correct = value === r.exists;
       if (navigator.vibrate) navigator.vibrate(correct ? 12 : [10, 40, 10]);
-      card.classList.add("is-settling");
-      setDrag(0); yesBtn.classList.remove("is-hot"); noBtn.classList.remove("is-hot");
-      setTimeout(function () { card.classList.remove("is-settling"); }, reduce ? 0 : 420);
-      card.classList.add(correct ? "is-correct" : "is-wrong");
-      var pill = document.createElement("span"); pill.className = "verdict-pill";
-      pill.innerHTML = '<svg class="icon" aria-hidden="true"><use href="' + (correct ? "#i-tick" : "#i-miss") + '"/></svg>' + (r.exists ? "Esiste" : "Non esiste");
-      card.appendChild(pill);
-      var v = $("[data-verdict]"); v.className = "verdict t-meta " + (correct ? "is-correct" : "is-wrong");
-      $("[data-verdict-icon]").setAttribute("href", correct ? "#i-tick" : "#i-miss");
-      $("[data-verdict-text]").textContent = correct ? "Esatto." : "Non proprio.";
-      $("[data-reveal-title]").textContent = r.title; $("[data-reveal-text]").textContent = r.text;
-      $("[data-question]").hidden = true; $("[data-reveal]").hidden = false;
-      $("[data-question-actions]").hidden = true; var nx = $("[data-next]"); nx.hidden = false;
-      nx.firstChild.textContent = i === ROUNDS.length - 1 ? "Ricomincia " : "Prossimo round ";
+      setTimeout(function () {
+        media.classList.add(correct ? "is-correct" : "is-wrong");
+        var pill = document.createElement("span"); pill.className = "verdict-pill";
+        pill.innerHTML = '<svg class="icon" aria-hidden="true"><use href="' + (correct ? "#i-tick" : "#i-miss") + '"/></svg>' + (r.exists ? "Esiste" : "Non esiste");
+        media.appendChild(pill);
+        var v = $("[data-verdict]"); v.className = "verdict t-meta " + (correct ? "is-correct" : "is-wrong");
+        $("[data-verdict-icon]").setAttribute("href", correct ? "#i-tick" : "#i-miss");
+        $("[data-verdict-text]").textContent = correct ? "Esatto." : "Non proprio.";
+        $("[data-reveal-title]").textContent = r.title; $("[data-reveal-text]").textContent = r.text;
+        $("[data-question]").hidden = true; $("[data-reveal]").hidden = false;
+        $("[data-question-actions]").hidden = true; var nx = $("[data-next]"); nx.hidden = false;
+        nx.firstChild.textContent = i === ROUNDS.length - 1 ? "Ricomincia " : "Prossimo round ";
+      }, reduce ? 0 : 380);
     }
 
-    // Trascinamento
-    var startX = 0, startY = 0, dx = 0, t0 = 0, active = false, horizontal = null;
-    card.addEventListener("pointerdown", function (e) {
+    // Trascinamento del cursore
+    var startX = 0, startVal = 0, dragging = false, moved = false;
+    knob.addEventListener("pointerdown", function (e) {
       if (locked) return;
-      card.classList.remove("is-nudging", "is-settling");
-      active = true; horizontal = null; startX = e.clientX; startY = e.clientY; dx = 0; t0 = performance.now();
+      slide.classList.remove("is-nudging", "is-settling");
+      slide.style.setProperty("--travel", travel() + "px");
+      dragging = true; moved = false; startX = e.clientX; startVal = x;
+      knob.setPointerCapture(e.pointerId); slide.classList.add("is-dragging");
     });
-    window.addEventListener("pointermove", function (e) {
-      if (!active) return;
-      var mx = e.clientX - startX, my = e.clientY - startY;
-      if (horizontal === null && (Math.abs(mx) > 6 || Math.abs(my) > 6)) {
-        horizontal = Math.abs(mx) > Math.abs(my);
-        if (horizontal) { card.setPointerCapture && card.setPointerCapture(e.pointerId); card.classList.add("is-dragging"); }
-        else { active = false; return; }
-      }
-      if (horizontal) { dx = mx; setDrag(dx); }
+    knob.addEventListener("pointermove", function (e) {
+      if (!dragging) return;
+      var d = e.clientX - startX; if (Math.abs(d) > 3) moved = true;
+      setX(startVal + d / travel());
     });
-    function end() {
-      if (!active) return; active = false; card.classList.remove("is-dragging");
-      var w = card.offsetWidth, v = Math.abs(dx) / Math.max(1, performance.now() - t0);
-      if (Math.abs(dx) > w * 0.3 || (Math.abs(dx) > 40 && v > 0.6)) { answer(dx > 0); return; }
-      card.classList.add("is-settling"); setDrag(0);
-      setTimeout(function () { card.classList.remove("is-settling"); }, 420);
+    function release() {
+      if (!dragging) return; dragging = false; slide.classList.remove("is-dragging");
+      if (x > 0.7) { answer(true); return; }
+      if (x < -0.7) { answer(false); return; }
+      settle(function () { setX(0); });
     }
-    window.addEventListener("pointerup", end);
-    window.addEventListener("pointercancel", end);
+    knob.addEventListener("pointerup", release);
+    knob.addEventListener("pointercancel", release);
+
+    // Tastiera sul cursore: frecce
+    knob.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowRight") { e.preventDefault(); answer(true); }
+      if (e.key === "ArrowLeft") { e.preventDefault(); answer(false); }
+    });
 
     document.addEventListener("click", function (e) {
       var b = e.target.closest("[data-answer]");
-      if (b) { card.classList.remove("is-nudging"); answer(b.getAttribute("data-answer") === "true"); return; }
+      if (b) { answer(b.getAttribute("data-answer") === "true"); return; }
       if (e.target.closest("[data-next]")) { i = (i + 1) % ROUNDS.length; render(); }
     });
-    document.addEventListener("keydown", function (e) {
-      if (locked) return;
-      if (e.key === "ArrowRight") answer(true);
-      if (e.key === "ArrowLeft") answer(false);
-    });
+    window.addEventListener("resize", function () { slide.style.setProperty("--travel", travel() + "px"); });
 
     render();
   })();
