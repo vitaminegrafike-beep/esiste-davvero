@@ -288,15 +288,6 @@ html[data-mode="landscape"] .landscape-block {
 .pill .icon { width: 16px; height: 16px; flex: none; }
 .media.is-correct .pill { background: var(--correct); }
 .media.is-wrong .pill { background: var(--wrong); }
-/* Cornice sottile sull'immagine, nel colore dell'esito */
-.media::after {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  box-shadow: inset 0 0 0 0 transparent;
-  transition: box-shadow var(--dur-base) var(--ease);
-}
-.media.is-correct::after { box-shadow: inset 0 0 0 3px var(--correct); }
-.media.is-wrong::after { box-shadow: inset 0 0 0 3px var(--wrong); }
-
 .round__body { padding-top: var(--s6); padding-bottom: var(--s8); gap: 0; }
 .round__info { display: grid; gap: 0; }
 .round__reveal { display: grid; gap: var(--s2); }
