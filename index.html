@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#080B0B">
+  <meta name="color-scheme" content="dark">
+  <meta name="robots" content="noindex">
+  <title>Esiste davvero?</title>
+  <meta name="description" content="Un piccolo gioco per grandi osservatori.">
+  <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/playfair-display-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Icone (sprite SVG) -->
+  <svg width="0" height="0" class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-logo" viewBox="0 0 40 24"><circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width="1.25"/><circle cx="28" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width="1.25"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z" fill="none" stroke="currentColor" stroke-width="1.25"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.25"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.25"/><path d="M12 10.5V17M12 7.2v.1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-tap" viewBox="0 0 24 24"><path d="M9.5 12V5.5a1.5 1.5 0 0 1 3 0V11l4.2.9a2 2 0 0 1 1.6 2.3l-.8 4.6a2 2 0 0 1-2 1.7h-4.6a2 2 0 0 1-1.6-.8L6 15.5a1.4 1.4 0 0 1 2-2l1.5 1.4" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round"/><path d="M6.5 6.5a5 5 0 0 1 9 0" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.25"/><path d="m7.8 12.2 2.8 2.8 5.6-6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-tick" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-miss" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8.5 12h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 7.5v5.5M12 16.2v.1" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-rotate" viewBox="0 0 48 48"><rect x="15" y="6" width="18" height="32" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M21 33h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M38 20a14 14 0 0 1-6 16m0 0 1-5m-1 5 5 0" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </svg>
+
+  <!-- Blocco desktop: visibile solo oltre 600 px -->
+  <aside class="desktop-block" aria-labelledby="desktop-title">
+    <div class="desktop-block__inner">
+      <svg class="logo" aria-hidden="true"><use href="#i-logo"/></svg>
+      <h1 id="desktop-title" class="t-h1">Questo gioco è fatto per essere toccato.</h1>
+      <p class="t-body muted">Aprilo dal tuo smartphone per partecipare.</p>
+      <div class="qr" data-qr>
+        <!-- QR generato per https://vitaminegrafike-beep.github.io/esiste-davvero/ -->
+        <svg viewBox="0 0 41 41" role="img" aria-label="QR code del gioco: https://vitaminegrafike-beep.github.io/esiste-davvero/" shape-rendering="crispEdges"><rect width="41" height="41" fill="#F3EFE7"/><path d="M4 4h1v1h-1zM5 4h1v1h-1zM6 4h1v1h-1zM7 4h1v1h-1zM8 4h1v1h-1zM9 4h1v1h-1zM10 4h1v1h-1zM12 4h1v1h-1zM15 4h1v1h-1zM17 4h1v1h-1zM20 4h1v1h-1zM21 4h1v1h-1zM22 4h1v1h-1zM23 4h1v1h-1zM24 4h1v1h-1zM25 4h1v1h-1zM27 4h1v1h-1zM30 4h1v1h-1zM31 4h1v1h-1zM32 4h1v1h-1zM33 4h1v1h-1zM34 4h1v1h-1zM35 4h1v1h-1zM36 4h1v1h-1zM4 5h1v1h-1zM10 5h1v1h-1zM12 5h1v1h-1zM17 5h1v1h-1zM22 5h1v1h-1zM26 5h1v1h-1zM27 5h1v1h-1zM28 5h1v1h-1zM30 5h1v1h-1zM36 5h1v1h-1zM4 6h1v1h-1zM6 6h1v1h-1zM7 6h1v1h-1zM8 6h1v1h-1zM10 6h1v1h-1zM14 6h1v1h-1zM19 6h1v1h-1zM22 6h1v1h-1zM23 6h1v1h-1zM28 6h1v1h-1zM30 6h1v1h-1zM32 6h1v1h-1zM33 6h1v1h-1zM34 6h1v1h-1zM36 6h1v1h-1zM4 7h1v1h-1zM6 7h1v1h-1zM7 7h1v1h-1zM8 7h1v1h-1zM10 7h1v1h-1zM12 7h1v1h-1zM15 7h1v1h-1zM16 7h1v1h-1zM18 7h1v1h-1zM20 7h1v1h-1zM21 7h1v1h-1zM22 7h1v1h-1zM23 7h1v1h-1zM27 7h1v1h-1zM28 7h1v1h-1zM30 7h1v1h-1zM32 7h1v1h-1zM33 7h1v1h-1zM34 7h1v1h-1zM36 7h1v1h-1zM4 8h1v1h-1zM6 8h1v1h-1zM7 8h1v1h-1zM8 8h1v1h-1zM10 8h1v1h-1zM13 8h1v1h-1zM18 8h1v1h-1zM23 8h1v1h-1zM25 8h1v1h-1zM28 8h1v1h-1zM30 8h1v1h-1zM32 8h1v1h-1zM33 8h1v1h-1zM34 8h1v1h-1zM36 8h1v1h-1zM4 9h1v1h-1zM10 9h1v1h-1zM15 9h1v1h-1zM18 9h1v1h-1zM21 9h1v1h-1zM23 9h1v1h-1zM26 9h1v1h-1zM30 9h1v1h-1zM36 9h1v1h-1zM4 10h1v1h-1zM5 10h1v1h-1zM6 10h1v1h-1zM7 10h1v1h-1zM8 10h1v1h-1zM9 10h1v1h-1zM10 10h1v1h-1zM12 10h1v1h-1zM14 10h1v1h-1zM16 10h1v1h-1zM18 10h1v1h-1zM20 10h1v1h-1zM22 10h1v1h-1zM24 10h1v1h-1zM26 10h1v1h-1zM28 10h1v1h-1zM30 10h1v1h-1zM31 10h1v1h-1zM32 10h1v1h-1zM33 10h1v1h-1zM34 10h1v1h-1zM35 10h1v1h-1zM36 10h1v1h-1zM12 11h1v1h-1zM13 11h1v1h-1zM14 11h1v1h-1zM15 11h1v1h-1zM21 11h1v1h-1zM22 11h1v1h-1zM23 11h1v1h-1zM24 11h1v1h-1zM26 11h1v1h-1zM27 11h1v1h-1zM28 11h1v1h-1zM4 12h1v1h-1zM6 12h1v1h-1zM7 12h1v1h-1zM9 12h1v1h-1zM10 12h1v1h-1zM11 12h1v1h-1zM14 12h1v1h-1zM15 12h1v1h-1zM16 12h1v1h-1zM18 12h1v1h-1zM20 12h1v1h-1zM21 12h1v1h-1zM22 12h1v1h-1zM23 12h1v1h-1zM25 12h1v1h-1zM30 12h1v1h-1zM33 12h1v1h-1zM35 12h1v1h-1zM36 12h1v1h-1zM4 13h1v1h-1zM5 13h1v1h-1zM8 13h1v1h-1zM15 13h1v1h-1zM21 13h1v1h-1zM22 13h1v1h-1zM23 13h1v1h-1zM24 13h1v1h-1zM27 13h1v1h-1zM30 13h1v1h-1zM31 13h1v1h-1zM33 13h1v1h-1zM34 13h1v1h-1zM35 13h1v1h-1zM36 13h1v1h-1zM5 14h1v1h-1zM7 14h1v1h-1zM9 14h1v1h-1zM10 14h1v1h-1zM12 14h1v1h-1zM13 14h1v1h-1zM14 14h1v1h-1zM18 14h1v1h-1zM22 14h1v1h-1zM24 14h1v1h-1zM26 14h1v1h-1zM27 14h1v1h-1zM28 14h1v1h-1zM29 14h1v1h-1zM31 14h1v1h-1zM32 14h1v1h-1zM33 14h1v1h-1zM35 14h1v1h-1zM36 14h1v1h-1zM8 15h1v1h-1zM9 15h1v1h-1zM13 15h1v1h-1zM17 15h1v1h-1zM18 15h1v1h-1zM20 15h1v1h-1zM22 15h1v1h-1zM24 15h1v1h-1zM30 15h1v1h-1zM31 15h1v1h-1zM33 15h1v1h-1zM35 15h1v1h-1zM4 16h1v1h-1zM7 16h1v1h-1zM8 16h1v1h-1zM10 16h1v1h-1zM12 16h1v1h-1zM15 16h1v1h-1zM16 16h1v1h-1zM19 16h1v1h-1zM22 16h1v1h-1zM24 16h1v1h-1zM26 16h1v1h-1zM29 16h1v1h-1zM31 16h1v1h-1zM32 16h1v1h-1zM33 16h1v1h-1zM36 16h1v1h-1zM8 17h1v1h-1zM12 17h1v1h-1zM13 17h1v1h-1zM15 17h1v1h-1zM20 17h1v1h-1zM21 17h1v1h-1zM23 17h1v1h-1zM25 17h1v1h-1zM28 17h1v1h-1zM35 17h1v1h-1zM4 18h1v1h-1zM6 18h1v1h-1zM7 18h1v1h-1zM10 18h1v1h-1zM12 18h1v1h-1zM13 18h1v1h-1zM14 18h1v1h-1zM15 18h1v1h-1zM16 18h1v1h-1zM18 18h1v1h-1zM19 18h1v1h-1zM20 18h1v1h-1zM22 18h1v1h-1zM23 18h1v1h-1zM24 18h1v1h-1zM25 18h1v1h-1zM28 18h1v1h-1zM30 18h1v1h-1zM31 18h1v1h-1zM33 18h1v1h-1zM5 19h1v1h-1zM6 19h1v1h-1zM7 19h1v1h-1zM9 19h1v1h-1zM12 19h1v1h-1zM13 19h1v1h-1zM14 19h1v1h-1zM20 19h1v1h-1zM24 19h1v1h-1zM25 19h1v1h-1zM27 19h1v1h-1zM28 19h1v1h-1zM29 19h1v1h-1zM30 19h1v1h-1zM32 19h1v1h-1zM33 19h1v1h-1zM34 19h1v1h-1zM4 20h1v1h-1zM5 20h1v1h-1zM7 20h1v1h-1zM8 20h1v1h-1zM9 20h1v1h-1zM10 20h1v1h-1zM11 20h1v1h-1zM12 20h1v1h-1zM16 20h1v1h-1zM19 20h1v1h-1zM20 20h1v1h-1zM24 20h1v1h-1zM25 20h1v1h-1zM26 20h1v1h-1zM27 20h1v1h-1zM29 20h1v1h-1zM30 20h1v1h-1zM32 20h1v1h-1zM33 20h1v1h-1zM34 20h1v1h-1zM5 21h1v1h-1zM6 21h1v1h-1zM7 21h1v1h-1zM8 21h1v1h-1zM9 21h1v1h-1zM11 21h1v1h-1zM13 21h1v1h-1zM15 21h1v1h-1zM17 21h1v1h-1zM18 21h1v1h-1zM19 21h1v1h-1zM21 21h1v1h-1zM24 21h1v1h-1zM26 21h1v1h-1zM27 21h1v1h-1zM28 21h1v1h-1zM30 21h1v1h-1zM32 21h1v1h-1zM33 21h1v1h-1zM35 21h1v1h-1zM36 21h1v1h-1zM4 22h1v1h-1zM5 22h1v1h-1zM8 22h1v1h-1zM10 22h1v1h-1zM12 22h1v1h-1zM13 22h1v1h-1zM18 22h1v1h-1zM19 22h1v1h-1zM20 22h1v1h-1zM21 22h1v1h-1zM24 22h1v1h-1zM25 22h1v1h-1zM26 22h1v1h-1zM28 22h1v1h-1zM29 22h1v1h-1zM31 22h1v1h-1zM32 22h1v1h-1zM34 22h1v1h-1zM35 22h1v1h-1zM6 23h1v1h-1zM7 23h1v1h-1zM9 23h1v1h-1zM13 23h1v1h-1zM15 23h1v1h-1zM16 23h1v1h-1zM20 23h1v1h-1zM24 23h1v1h-1zM27 23h1v1h-1zM28 23h1v1h-1zM29 23h1v1h-1zM30 23h1v1h-1zM32 23h1v1h-1zM36 23h1v1h-1zM6 24h1v1h-1zM9 24h1v1h-1zM10 24h1v1h-1zM11 24h1v1h-1zM14 24h1v1h-1zM18 24h1v1h-1zM22 24h1v1h-1zM23 24h1v1h-1zM25 24h1v1h-1zM28 24h1v1h-1zM33 24h1v1h-1zM34 24h1v1h-1zM4 25h1v1h-1zM5 25h1v1h-1zM6 25h1v1h-1zM9 25h1v1h-1zM13 25h1v1h-1zM16 25h1v1h-1zM17 25h1v1h-1zM19 25h1v1h-1zM21 25h1v1h-1zM22 25h1v1h-1zM23 25h1v1h-1zM24 25h1v1h-1zM25 25h1v1h-1zM27 25h1v1h-1zM29 25h1v1h-1zM30 25h1v1h-1zM34 25h1v1h-1zM36 25h1v1h-1zM8 26h1v1h-1zM10 26h1v1h-1zM12 26h1v1h-1zM13 26h1v1h-1zM15 26h1v1h-1zM16 26h1v1h-1zM17 26h1v1h-1zM20 26h1v1h-1zM21 26h1v1h-1zM22 26h1v1h-1zM24 26h1v1h-1zM26 26h1v1h-1zM27 26h1v1h-1zM28 26h1v1h-1zM29 26h1v1h-1zM30 26h1v1h-1zM31 26h1v1h-1zM33 26h1v1h-1zM34 26h1v1h-1zM35 26h1v1h-1zM36 26h1v1h-1zM5 27h1v1h-1zM6 27h1v1h-1zM7 27h1v1h-1zM8 27h1v1h-1zM15 27h1v1h-1zM18 27h1v1h-1zM20 27h1v1h-1zM22 27h1v1h-1zM24 27h1v1h-1zM29 27h1v1h-1zM30 27h1v1h-1zM35 27h1v1h-1zM36 27h1v1h-1zM4 28h1v1h-1zM9 28h1v1h-1zM10 28h1v1h-1zM12 28h1v1h-1zM13 28h1v1h-1zM15 28h1v1h-1zM16 28h1v1h-1zM17 28h1v1h-1zM18 28h1v1h-1zM19 28h1v1h-1zM21 28h1v1h-1zM26 28h1v1h-1zM27 28h1v1h-1zM28 28h1v1h-1zM29 28h1v1h-1zM30 28h1v1h-1zM31 28h1v1h-1zM32 28h1v1h-1zM35 28h1v1h-1zM12 29h1v1h-1zM14 29h1v1h-1zM15 29h1v1h-1zM16 29h1v1h-1zM17 29h1v1h-1zM18 29h1v1h-1zM19 29h1v1h-1zM20 29h1v1h-1zM21 29h1v1h-1zM23 29h1v1h-1zM28 29h1v1h-1zM32 29h1v1h-1zM33 29h1v1h-1zM35 29h1v1h-1zM4 30h1v1h-1zM5 30h1v1h-1zM6 30h1v1h-1zM7 30h1v1h-1zM8 30h1v1h-1zM9 30h1v1h-1zM10 30h1v1h-1zM12 30h1v1h-1zM14 30h1v1h-1zM15 30h1v1h-1zM23 30h1v1h-1zM26 30h1v1h-1zM27 30h1v1h-1zM28 30h1v1h-1zM30 30h1v1h-1zM32 30h1v1h-1zM4 31h1v1h-1zM10 31h1v1h-1zM12 31h1v1h-1zM14 31h1v1h-1zM15 31h1v1h-1zM16 31h1v1h-1zM17 31h1v1h-1zM18 31h1v1h-1zM19 31h1v1h-1zM20 31h1v1h-1zM23 31h1v1h-1zM25 31h1v1h-1zM26 31h1v1h-1zM27 31h1v1h-1zM28 31h1v1h-1zM32 31h1v1h-1zM33 31h1v1h-1zM34 31h1v1h-1zM35 31h1v1h-1zM4 32h1v1h-1zM6 32h1v1h-1zM7 32h1v1h-1zM8 32h1v1h-1zM10 32h1v1h-1zM14 32h1v1h-1zM21 32h1v1h-1zM25 32h1v1h-1zM26 32h1v1h-1zM27 32h1v1h-1zM28 32h1v1h-1zM29 32h1v1h-1zM30 32h1v1h-1zM31 32h1v1h-1zM32 32h1v1h-1zM34 32h1v1h-1zM4 33h1v1h-1zM6 33h1v1h-1zM7 33h1v1h-1zM8 33h1v1h-1zM10 33h1v1h-1zM12 33h1v1h-1zM15 33h1v1h-1zM16 33h1v1h-1zM17 33h1v1h-1zM18 33h1v1h-1zM22 33h1v1h-1zM24 33h1v1h-1zM27 33h1v1h-1zM31 33h1v1h-1zM33 33h1v1h-1zM34 33h1v1h-1zM36 33h1v1h-1zM4 34h1v1h-1zM6 34h1v1h-1zM7 34h1v1h-1zM8 34h1v1h-1zM10 34h1v1h-1zM12 34h1v1h-1zM13 34h1v1h-1zM15 34h1v1h-1zM17 34h1v1h-1zM18 34h1v1h-1zM21 34h1v1h-1zM22 34h1v1h-1zM26 34h1v1h-1zM30 34h1v1h-1zM31 34h1v1h-1zM4 35h1v1h-1zM10 35h1v1h-1zM15 35h1v1h-1zM17 35h1v1h-1zM19 35h1v1h-1zM20 35h1v1h-1zM21 35h1v1h-1zM23 35h1v1h-1zM26 35h1v1h-1zM27 35h1v1h-1zM28 35h1v1h-1zM30 35h1v1h-1zM31 35h1v1h-1zM32 35h1v1h-1zM36 35h1v1h-1zM4 36h1v1h-1zM5 36h1v1h-1zM6 36h1v1h-1zM7 36h1v1h-1zM8 36h1v1h-1zM9 36h1v1h-1zM10 36h1v1h-1zM12 36h1v1h-1zM13 36h1v1h-1zM14 36h1v1h-1zM17 36h1v1h-1zM18 36h1v1h-1zM19 36h1v1h-1zM20 36h1v1h-1zM21 36h1v1h-1zM22 36h1v1h-1zM23 36h1v1h-1zM24 36h1v1h-1zM25 36h1v1h-1zM27 36h1v1h-1zM30 36h1v1h-1zM32 36h1v1h-1zM34 36h1v1h-1z" fill="#080B0B"/></svg>
+      </div>
+      <p class="t-meta url" data-short-url>link del gioco</p>
+    </div>
+  </aside>
+
+  <!-- Avviso landscape -->
+  <div class="landscape-block" role="alertdialog" aria-labelledby="landscape-title" aria-describedby="landscape-text">
+    <svg class="landscape-block__icon" aria-hidden="true"><use href="#i-rotate"/></svg>
+    <h2 id="landscape-title" class="t-h1">Ruota il telefono.</h2>
+    <p id="landscape-text" class="t-body muted">Questo gioco funziona meglio in verticale.</p>
+  </div>
+
+  <main id="app" class="app">
+    <p class="offline-banner" data-offline role="status" hidden>Sei offline. Puoi continuare a giocare: invieremo il risultato appena torna la rete.</p>
+
+    <!-- 1 Splash -->
+    <section class="screen screen--splash" data-screen="splash" hidden>
+      <div class="splash__bg" aria-hidden="true"></div>
+      <div class="screen__body">
+        <svg class="logo" aria-hidden="true"><use href="#i-logo"/></svg>
+        <p class="t-meta accent splash__eyebrow">Un piccolo gioco per grandi osservatori</p>
+        <h1 class="t-display" tabindex="-1" data-focus>Esiste<br>davvero?</h1>
+        <p class="t-lead">Il design ha superato la fantasia?</p>
+        <p class="t-body muted">8 prodotti. Alcuni esistono davvero.</p>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn btn--primary" data-action="start">Inizia <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+        <p class="t-meta muted splash__footer">Design, marketing, intuizione.<br>Quanto sei davvero attento?</p>
+      </div>
+    </section>
+
+    <!-- 2 Nickname -->
+    <section class="screen" data-screen="nickname" hidden>
+      <form class="screen__form" data-form="nickname" novalidate>
+        <div class="screen__body">
+          <h1 class="t-h1" tabindex="-1" data-focus>Prima, come vuoi farti chiamare?</h1>
+          <p class="t-body muted">Servirà soltanto per mostrarti nella graduatoria.</p>
+          <div class="field">
+            <label for="nickname" class="field__label">Il tuo nickname</label>
+            <input id="nickname" name="nickname" class="field__input" type="text" inputmode="text"
+                   placeholder="Es. Alessio" maxlength="20" autocomplete="off" autocapitalize="words"
+                   spellcheck="false" enterkeyhint="done" aria-describedby="nickname-error nickname-note">
+            <p id="nickname-error" class="field__error" aria-live="polite"><svg class="icon" aria-hidden="true" hidden data-error-icon><use href="#i-alert"/></svg><span data-error></span></p>
+            <p id="nickname-note" class="t-small muted">Niente account, niente email.</p>
+          </div>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn btn--primary" data-submit>Continua <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+        </div>
+      </form>
+    </section>
+
+    <!-- 3 Istruzioni -->
+    <section class="screen" data-screen="istruzioni" hidden>
+      <div class="screen__body">
+        <h1 class="t-h1" tabindex="-1" data-focus>8 prodotti.<br>Alcuni esistono davvero.<br>Gli altri ce li siamo inventati.</h1>
+        <ol class="steps">
+          <li><svg aria-hidden="true"><use href="#i-eye"/></svg><span>Osserva il prodotto.</span></li>
+          <li><svg aria-hidden="true"><use href="#i-info"/></svg><span>Leggi le informazioni.</span></li>
+          <li><svg aria-hidden="true"><use href="#i-tap"/></svg><span>Scegli Esiste o Non esiste.</span></li>
+          <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Scopri subito la risposta.</span></li>
+        </ol>
+        <p class="t-body muted">Nessun timer. Vai al tuo ritmo.</p>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn btn--primary" data-action="play">Inizia il gioco <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+      </div>
+    </section>
+
+    <!-- 4-5 Round e reveal -->
+    <section class="screen screen--round" data-screen="round" hidden>
+      <header class="round__header">
+        <p class="t-meta" data-counter>Round 1 di 8</p>
+        <div class="progress" role="progressbar" aria-label="Avanzamento" aria-valuemin="0" aria-valuemax="8" aria-valuenow="1">
+          <span class="progress__fill" data-progress></span>
+        </div>
+      </header>
+      <figure class="media" data-media>
+        <img data-image src="" alt="" width="1024" height="1280" decoding="async">
+        <span class="media__fallback t-meta" data-image-fallback hidden></span>
+        <span class="pill" data-pill hidden></span>
+      </figure>
+      <div class="screen__body round__body">
+        <!-- Domanda -->
+        <div class="round__info" data-phase-question>
+          <h1 class="t-product" tabindex="-1" data-brand></h1>
+          <p class="round__product" data-product></p>
+          <p class="t-body muted" data-description></p>
+          <p class="t-meta accent" data-category></p>
+        </div>
+        <!-- Reveal -->
+        <div class="round__reveal" data-phase-reveal hidden>
+          <p class="verdict t-meta" data-verdict><svg class="icon" aria-hidden="true"><use data-verdict-icon href="#i-tick"/></svg><span data-verdict-text></span></p>
+          <h1 class="t-h1" tabindex="-1" data-reveal-title></h1>
+          <p class="t-body muted" data-reveal-text></p>
+          <p class="t-quote" data-transition hidden></p>
+        </div>
+      </div>
+      <div class="actions">
+        <div data-phase-question>
+          <p class="t-meta question">Questo prodotto esiste davvero?</p>
+          <div class="choices">
+            <button type="button" class="btn btn--choice" data-answer="true">Esiste<svg class="btn__tick" aria-hidden="true"><use href="#i-tick"/></svg></button>
+            <button type="button" class="btn btn--choice" data-answer="false">Non esiste<svg class="btn__tick" aria-hidden="true"><use href="#i-tick"/></svg></button>
+          </div>
+        </div>
+        <div data-phase-reveal hidden>
+          <button type="button" class="btn btn--primary" data-action="next"><span data-next-label>Prossimo round</span> <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+        </div>
+      </div>
+      <p class="sr-only" aria-live="polite" data-announcer></p>
+    </section>
+
+    <!-- 6 Risultato -->
+    <section class="screen screen--result" data-screen="risultato" hidden>
+      <div class="screen__body result">
+        <p class="t-meta accent">Il tuo risultato</p>
+        <p class="t-score" data-score>0 / 8</p>
+        <h1 class="t-h1" tabindex="-1" data-focus data-result-title></h1>
+        <p class="t-body muted" data-result-text></p>
+        <p class="t-small muted replay-note" data-replay-note hidden>Questa partita non entra in graduatoria.</p>
+        <div class="status" role="status" data-submit-status></div>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn btn--primary" data-action="leaderboard">Vedi la graduatoria <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+      </div>
+    </section>
+
+    <!-- 7 Graduatoria -->
+    <section class="screen" data-screen="graduatoria" hidden>
+      <div class="screen__body">
+        <h1 class="t-h1" tabindex="-1" data-focus>Graduatoria</h1>
+        <p class="t-body muted">Qui conta l’occhio, non la velocità.</p>
+        <div class="board" data-board aria-live="polite" aria-busy="false"></div>
+        <p class="t-small mock-badge" data-mock-badge hidden>Prototipo: nomi e punteggi di prova.</p>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn btn--primary" data-action="stats">Com’è andato il gruppo? <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+      </div>
+    </section>
+
+    <!-- 8 Statistiche -->
+    <section class="screen" data-screen="statistiche" hidden>
+      <div class="screen__body">
+        <h1 class="t-h1" tabindex="-1" data-focus>Com’è andato il gruppo?</h1>
+        <div class="stats" data-stats aria-live="polite" aria-busy="false"></div>
+        <p class="t-small mock-badge" data-mock-badge hidden>Prototipo: statistiche calcolate su dati di prova.</p>
+        <p class="t-quote closing">La realtà è solo una storia ben progettata.</p>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn btn--primary" data-action="replay">Rigioca <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+        <button type="button" class="btn btn--text" data-action="back-to-board">Torna alla graduatoria</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
