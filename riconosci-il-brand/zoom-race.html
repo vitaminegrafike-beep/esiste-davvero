@@ -204,6 +204,7 @@
     </section>
   </div>
 
+  <script src="js/rounds.js"></script>
   <script>
   (function () {
     "use strict";
@@ -235,7 +236,7 @@
       if (players.length >= MAX) return;
       var free = CHARS.map(function (_, i) { return i; }).filter(function (i) { return !players.some(function (p) { return p.char === i; }); });
       var c = free[Math.floor(Math.random() * free.length)];
-      var p = { name: name, char: c, score: 0, time: 0, skill: 0.35 + Math.random() * 0.5, pos: 0, shown: 0 };
+      var p = { name: name, char: c, score: 0, right: 0, time: 0, skill: 0.35 + Math.random() * 0.5, pos: 0, shown: 0 };
       players.push(p);
       var li = charsEl.querySelector('[data-char="' + c + '"]');
       li.classList.add("is-taken", "is-new");
@@ -279,7 +280,7 @@
 
     function placeAll(animate) {
       var groups = {};
-      players.forEach(function (p) { (groups[p.score] = groups[p.score] || []).push(p); });
+      players.forEach(function (p) { var k = Math.round(p.score / 40); (groups[k] = groups[k] || []).push(p); });   // pedine vicine si affiancano
       var scale = svg.getScreenCTM().a;
       document.documentElement.style.setProperty("--pawn-h", Math.round(Math.max(30, Math.min(60, 46 * scale))) + "px");
       Object.keys(groups).forEach(function (k) {
@@ -287,7 +288,7 @@
         g.forEach(function (p, i) { p.lane = i; p.laneCount = g.length; });
       });
       players.forEach(function (p) {
-        var target = p.score / ROUNDS;
+        var target = Math.min(1, p.score / (ROUNDS * 100));      // 1000 punti = traguardo
         if (!animate || REDUCED) { p.shown = target; draw(p); return; }
         var from = p.shown, t0 = performance.now(), dur = 1100;
         (function step(now) {
@@ -314,7 +315,7 @@
       $("[data-board-empty]").hidden = round > 0;
       $("[data-board]").innerHTML = round === 0 ? "" : list.map(function (p, i) {
         return '<li><span class="n">' + (i + 1) + '</span><img src="' + IMG(p.char) + '" alt=""><span class="who">' + p.name +
-          ' <span class="muted">· ' + CHARS[p.char] + '</span></span><span class="pts">' + p.score + " / " + round + "</span></li>";
+          ' <span class="muted">· ' + CHARS[p.char] + '</span></span><span class="pts">' + p.score + " pt</span></li>";
       }).join("");
     }
 
@@ -335,7 +336,7 @@
       go.hidden = true;
       $("[data-lobby-eyebrow]").textContent = "In gara";
       $("[data-lobby-title]").textContent = "Si corre.";
-      $("[data-lobby-sub]").textContent = "Ogni risposta esatta è un passo verso il traguardo";
+      $("[data-lobby-sub]").textContent = "Più rispondi in fretta, più la pedina corre";
       countdown(nextRound);
     }
 
@@ -345,7 +346,10 @@
       statusEl.textContent = "Round " + round + " di " + ROUNDS + " · dettaglio in messa a fuoco…";
       later(function () {
         players.forEach(function (p) {
-          if (Math.random() < p.skill) { p.score++; p.time += 1 + Math.random() * 9; }
+          var sec = Math.min(7.95, 0.8 + Math.random() * 7.5 * (1.15 - p.skill));
+          var ok = Math.random() < p.skill;
+          p.score += window.ZR_POINTS(sec, ok);
+          if (ok) { p.right++; p.time += sec; }
         });
         placeAll(true); renderBoard();
         statusEl.textContent = "Round " + round + " di " + ROUNDS + " · risposte arrivate";
@@ -360,7 +364,7 @@
       var w = ranking()[0];
       var o = document.createElement("div"); o.className = "overlay";
       o.innerHTML = '<div class="win"><p class="t-meta accent">Vince la gara</p><img src="' + IMG(w.char) + '" alt="">' +
-        '<p class="t-display">' + w.name + '</p><p class="t-meta muted">' + CHARS[w.char] + " · " + w.score + " su " + ROUNDS + " dettagli riconosciuti</p>" +
+        '<p class="t-display">' + w.name + '</p><p class="t-meta muted">' + CHARS[w.char] + " · " + w.score + " punti · " + w.right + " brand su " + ROUNDS + "</p>" +
         '<button type="button" class="btn btn--primary" data-again>Ricomincia la demo <svg aria-hidden="true"><use href="#i-arrow"/></svg></button></div>';
       document.body.appendChild(o);
       o.querySelector("[data-again]").addEventListener("click", function () { location.reload(); });
