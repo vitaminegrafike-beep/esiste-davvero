@@ -666,6 +666,18 @@
     show("splash");
   }
 
+  // Android: schermo intero al tocco di Inizia (iPhone non lo consente ai siti)
+  function goFullscreen() {
+    var el = document.documentElement;
+    var req = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (!req || document.fullscreenElement || document.webkitFullscreenElement) return;
+    if (!window.matchMedia("(pointer: coarse)").matches || PREVIEW) return;
+    try {
+      var r = req.call(el, { navigationUI: "hide" });
+      if (r && r.catch) r.catch(function () {});
+    } catch (e) {}
+  }
+
   function onStart() {
     if (inProgress()) {
       var i = state.round;
@@ -728,8 +740,8 @@
     if (actionLock) return;
     lockActions();
     switch (action) {
-      case "start": onStart(); break;
-      case "splash-secondary": onSplashSecondary(btn.getAttribute("data-mode")); break;
+      case "start": goFullscreen(); onStart(); break;
+      case "splash-secondary": goFullscreen(); onSplashSecondary(btn.getAttribute("data-mode")); break;
       case "home": showSplash(); break;
       case "play": goToRound(0, "question"); break;
       case "leaderboard": showBoard(); break;
