@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080B0B">
+  <meta name="color-scheme" content="dark">
+  <meta name="robots" content="noindex">
+  <title>Zoom Race · Regia</title>
+  <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Zoom Race, regia: tre colonne su schermo 16:9 condiviso in call.
+       Sinistra = come entrare, centro = personaggi, destra = la corsa. */
+    :root {
+      --panel: #0D100F;
+      --line: rgba(243, 239, 231, 0.16);
+      --glow: rgba(243, 222, 180, 0.22);
+      --asphalt: #262422;
+      --pad: clamp(20px, 2.2vw, 40px);
+    }
+    html, body { height: 100%; }
+    body { overflow: hidden; }
+    .race-app { display: grid; grid-template-columns: minmax(280px, 24%) minmax(0, 1fr) minmax(320px, 31%); grid-template-rows: minmax(0, 1fr); height: 100vh; }
+    .t-meta { letter-spacing: 0.22em; }
+
+    /* ---------- Sinistra ---------- */
+    .intro {
+      display: flex; flex-direction: column; gap: clamp(14px, 2.6vh, 28px); min-height: 0; overflow: hidden;
+      padding: clamp(28px, 6vh, 72px) var(--pad) clamp(20px, 3vh, 36px);
+      background: linear-gradient(to right, rgba(8,11,11,.35), rgba(8,11,11,.85)), url("assets/images/09-background-dark-stone.webp") 30% center / cover;
+      border-right: 1px solid var(--line);
+    }
+    .brandmark { font-family: var(--serif); font-weight: 400; font-size: clamp(56px, min(6.4vw, 13vh), 132px); line-height: .86; letter-spacing: -0.01em; text-transform: uppercase; }
+    .brandmark em { font-style: italic; display: block; }
+    .intro__claim { color: var(--text); line-height: 1.9; max-width: 22ch; }
+    .rule { width: 48px; height: 1px; background: var(--text-muted); border: 0; margin: 0; }
+    .how { list-style: none; margin: 0; padding: 0; display: grid; gap: clamp(10px, 1.8vh, 18px); }
+    .how li { display: grid; grid-template-columns: 40px 1fr; gap: var(--s4); align-items: center; font-size: clamp(14px, 1vw, 17px); line-height: 1.35; }
+    .how b { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-weight: 400; font-size: 17px; background: var(--surface-2); border: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+    .qrcard { margin-top: auto; display: grid; justify-items: center; gap: var(--s4); padding: clamp(14px, 2.4vh, 24px); border: 1px solid var(--line); border-radius: var(--r-card); background: rgba(8,11,11,.7); }
+    .qr { width: clamp(110px, min(10vw, 19vh), 190px); aspect-ratio: 1; border-radius: 10px; overflow: hidden; background: var(--text); }
+    .qr__svg { width: 100%; height: 100%; display: block; }
+    .qrcard p { text-align: center; color: var(--text-muted); font-size: 11px; line-height: 1.8; }
+    .intro__foot { display: grid; gap: var(--s2); }
+    .intro__foot .proto { color: var(--accent); font-size: 12px; }
+
+    /* ---------- Centro ---------- */
+    .lobby { padding: var(--pad) clamp(16px, 1.4vw, 28px); min-height: 0; display: flex; }
+    .panel {
+      flex: 1; min-height: 0; display: flex; flex-direction: column;
+      background: var(--panel); border: 1px solid var(--line); border-radius: 20px;
+      padding: clamp(18px, 3vh, 32px) clamp(18px, 2vw, 36px);
+    }
+    .panel__top { display: flex; justify-content: space-between; gap: var(--s4); color: var(--text-muted); }
+    .panel__top [data-count] { color: var(--text); font-variant-numeric: tabular-nums; }
+    .lobby h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(30px, min(3vw, 6vh), 60px); line-height: 1.05; text-align: center; margin-top: clamp(8px, 2vh, 24px); }
+    .lobby__sub { text-align: center; color: var(--text-muted); margin-top: var(--s3); }
+    .chars { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, minmax(0, 1fr)); gap: clamp(4px, 1vh, 12px) var(--s4); margin: clamp(12px, 2.4vh, 28px) 0; }
+    .char { position: relative; min-height: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .char__fig { position: relative; flex: 1; min-height: 0; width: 100%; display: flex; justify-content: center; align-items: flex-end; }
+    .char__fig::before {   /* luce sotto il piedistallo quando il personaggio è preso */
+      content: ""; position: absolute; left: 50%; bottom: -4%; width: 70%; height: 30%; transform: translateX(-50%);
+      background: radial-gradient(closest-side, var(--glow), transparent); opacity: 0; transition: opacity 600ms var(--ease);
+    }
+    .char img { position: absolute; left: 0; bottom: 0; width: 100%; height: 100%; object-fit: contain; object-position: center bottom;
+      filter: grayscale(1) brightness(.32) contrast(.9); opacity: .55; transition: filter 700ms var(--ease), opacity 700ms var(--ease), transform 700ms var(--ease); transform: scale(.94); }
+    .char__name { font-size: 11px; font-weight: 500; letter-spacing: .24em; text-transform: uppercase; color: var(--text-muted); opacity: .45; transition: opacity 400ms var(--ease), color 400ms var(--ease); }
+    .char__who { font-size: clamp(12px, .85vw, 14px); line-height: 1.2; color: var(--text); height: 1.2em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; opacity: 0; transition: opacity 400ms var(--ease) 200ms; }
+    .char.is-taken img { filter: none; opacity: 1; transform: none; }
+    .char.is-taken .char__fig::before { opacity: 1; }
+    .char.is-taken .char__name { color: var(--text); opacity: 1; }
+    .char.is-taken .char__who { opacity: 1; }
+    .char.is-new img { animation: lit 900ms var(--ease); }
+    @keyframes lit { 0% { transform: scale(.94); } 45% { transform: translateY(-10%) scale(1.06); } 100% { transform: none; } }
+
+    .bar { display: flex; align-items: center; justify-content: center; gap: var(--s4); min-height: 60px; padding: 8px 8px 8px var(--s6); border: 1px solid var(--line); border-radius: 14px; }
+    .bar__status { display: flex; align-items: center; gap: var(--s3); color: var(--text-muted); font-size: 12px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; }
+    .spinner { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--line); border-top-color: var(--text); animation: spin 1s linear infinite; flex: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .bar .btn { width: auto; min-height: 44px; padding: 0 var(--s6); margin-left: auto; }
+    .bar.is-waiting .btn { display: none; }
+
+    /* ---------- Destra: la corsa ---------- */
+    .race { position: relative; display: flex; flex-direction: column; min-height: 0; padding: var(--pad) var(--pad) var(--pad) 0; gap: var(--s4); }
+    .race__head { display: grid; gap: 6px; }
+    .road { position: relative; flex: 1; min-height: 0; }
+    .road svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .road__label { font: 600 16px/1 var(--sans); letter-spacing: .14em; fill: var(--text); }
+    .pawn { position: absolute; left: 0; top: 0; height: var(--pawn-h, 52px); transform-origin: 50% 100%; will-change: transform; pointer-events: none; }
+    .pawn img { height: 100%; width: auto; display: block; filter: drop-shadow(0 6px 6px rgba(0,0,0,.55)); }
+    .pawn.is-in { animation: drop 600ms var(--ease); }
+    @keyframes drop { from { opacity: 0; translate: 0 -24px; } to { opacity: 1; translate: 0 0; } }
+
+    .board { border: 1px solid var(--line); border-radius: 16px; background: rgba(13,16,15,.88); display: grid; grid-template-columns: 1fr auto; }
+    .board__main { padding: var(--s4) var(--s6); min-width: 0; }
+    .board__head { display: flex; justify-content: space-between; gap: var(--s4); color: var(--text-muted); padding-bottom: var(--s3); border-bottom: 1px solid var(--line); }
+    .board__head [data-round] { color: var(--text); font-variant-numeric: tabular-nums; }
+    .board ol { list-style: none; margin: 0; padding: 0; }
+    .board li { display: grid; grid-template-columns: 22px 28px 1fr auto; align-items: center; gap: var(--s3); height: clamp(30px, 4.4vh, 40px); border-bottom: 1px solid var(--line); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
+    .board li:last-child { border-bottom: 0; }
+    .board li img { height: 26px; width: auto; justify-self: center; }
+    .board li .n { color: var(--text-muted); font-variant-numeric: tabular-nums; }
+    .board li .pts { font-variant-numeric: tabular-nums; color: var(--text-muted); }
+    .board li .who { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .board__empty { color: var(--text-muted); font-size: 14px; padding: var(--s4) 0 var(--s2); }
+    .board__motto { border-left: 1px solid var(--line); padding: var(--s6); display: flex; flex-direction: column; justify-content: center; gap: var(--s4); color: var(--text-muted); font-size: 12px; font-weight: 500; letter-spacing: .24em; line-height: 1.9; text-transform: uppercase; }
+    .board__motto hr { width: 32px; height: 1px; border: 0; background: var(--text-muted); margin: 0; }
+
+    /* ---------- Sovrapposizioni ---------- */
+    .overlay { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; background: rgba(8,11,11,.82); text-align: center; }
+    .overlay__n { font-family: var(--serif); font-size: clamp(140px, 18vw, 280px); line-height: 1; animation: pop 900ms var(--ease) both; }
+    .overlay__n--via { font-style: italic; }
+    @keyframes pop { from { opacity: 0; transform: scale(1.4); } 30% { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(.92); } }
+    .win { display: grid; justify-items: center; gap: var(--s4); animation: reveal-in 500ms var(--ease) both; }
+    .win img { height: clamp(160px, 28vh, 280px); filter: drop-shadow(0 18px 30px rgba(0,0,0,.6)); }
+    .win .t-display { font-size: clamp(56px, 6vw, 96px); }
+    .win .btn { width: auto; margin-top: var(--s4); }
+
+    @media (max-width: 1500px) { .board__motto { display: none; } }
+    @media (max-height: 800px) { .board li { height: 28px; } .board__main { padding: var(--s3) var(--s4); } .race { gap: var(--s2); } }
+    @media (max-height: 760px) { .how { display: none; } .intro__claim { line-height: 1.7; } }
+    @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 3s; } .char.is-new img, .pawn.is-in, .overlay__n { animation: none; } }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </svg>
+
+  <div class="race-app">
+    <!-- Sinistra: come entrare -->
+    <section class="intro" aria-labelledby="game-title">
+      <h1 id="game-title" class="brandmark">Zoom<em>Race</em></h1>
+      <p class="t-meta intro__claim">Quanto ci metti a riconoscere i grandi brand?</p>
+      <hr class="rule">
+      <ol class="how">
+        <li><b>1</b><span>Inquadra<br>il QR code</span></li>
+        <li><b>2</b><span>Scegli il tuo<br>personaggio</span></li>
+        <li><b>3</b><span>Preparati a giocare</span></li>
+      </ol>
+      <div class="qrcard">
+        <div class="qr"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 43 43" class="qr__svg" role="img" aria-label="QR code per entrare in gara" shape-rendering="crispEdges"><path fill="#f3efe7" d="M0 0h43v43h-43z"/><path class="qrline" stroke="#080b0b" d="M3 3.5h7m2 0h1m1 0h2m2 0h1m5 0h1m1 0h1m4 0h1m1 0h7m-37 1h1m5 0h1m6 0h1m2 0h1m3 0h1m5 0h3m1 0h1m5 0h1m-37 1h1m1 0h3m1 0h1m1 0h5m1 0h1m6 0h1m4 0h1m1 0h1m1 0h1m1 0h3m1 0h1m-37 1h1m1 0h3m1 0h1m1 0h1m3 0h4m1 0h1m2 0h1m1 0h5m3 0h1m1 0h3m1 0h1m-37 1h1m1 0h3m1 0h1m1 0h5m2 0h7m1 0h1m1 0h1m2 0h1m1 0h1m1 0h3m1 0h1m-37 1h1m5 0h1m1 0h2m1 0h1m2 0h2m1 0h1m7 0h3m2 0h1m5 0h1m-37 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-29 1h4m2 0h5m2 0h1m6 0h1m-29 1h1m1 0h5m2 0h1m2 0h3m1 0h1m2 0h1m2 0h5m3 0h5m-32 1h1m1 0h1m1 0h1m3 0h5m2 0h1m1 0h5m3 0h2m1 0h1m3 0h1m-35 1h2m2 0h3m1 0h4m1 0h6m1 0h2m1 0h8m3 0h2m-36 1h2m2 0h1m2 0h1m1 0h1m2 0h1m1 0h1m2 0h5m3 0h1m4 0h1m1 0h1m2 0h1m-35 1h1m1 0h5m1 0h2m1 0h3m1 0h3m2 0h6m1 0h8m-36 1h1m1 0h3m1 0h2m1 0h4m2 0h1m1 0h4m1 0h4m1 0h1m2 0h1m-32 1h7m5 0h1m1 0h3m1 0h1m6 0h4m1 0h4m1 0h2m-35 1h2m3 0h3m2 0h1m1 0h1m5 0h2m4 0h2m3 0h2m3 0h1m-37 1h4m2 0h2m1 0h1m2 0h1m2 0h1m2 0h1m3 0h1m1 0h3m2 0h2m1 0h1m1 0h3m-36 1h2m1 0h1m2 0h2m2 0h3m1 0h3m3 0h1m1 0h1m2 0h1m1 0h1m2 0h1m2 0h2m-34 1h2m2 0h1m1 0h3m1 0h1m4 0h1m3 0h2m2 0h1m1 0h2m3 0h1m2 0h2m-37 1h1m6 0h2m1 0h1m1 0h3m1 0h1m1 0h1m2 0h2m1 0h1m2 0h1m1 0h3m4 0h1m-37 1h1m5 0h1m2 0h3m2 0h1m1 0h2m2 0h1m1 0h5m2 0h2m1 0h3m-35 1h5m4 0h1m2 0h1m3 0h8m4 0h2m3 0h1m1 0h1m-36 1h1m2 0h1m1 0h4m6 0h3m2 0h2m3 0h1m1 0h3m1 0h3m1 0h2m-37 1h2m1 0h1m3 0h1m2 0h9m2 0h4m1 0h4m1 0h2m2 0h1m-36 1h1m1 0h1m3 0h2m1 0h3m2 0h3m2 0h1m2 0h5m3 0h3m1 0h1m1 0h1m-37 1h1m1 0h2m1 0h1m4 0h1m2 0h1m1 0h1m1 0h2m2 0h1m1 0h1m4 0h1m2 0h1m-32 1h1m1 0h1m2 0h5m2 0h1m2 0h2m1 0h1m1 0h2m5 0h1m1 0h2m1 0h2m1 0h2m-37 1h1m1 0h3m2 0h1m1 0h1m1 0h1m1 0h3m3 0h3m4 0h1m3 0h2m3 0h2m-37 1h1m1 0h9m2 0h1m1 0h1m1 0h1m1 0h1m3 0h12m-27 1h1m1 0h2m1 0h2m1 0h1m1 0h3m2 0h1m3 0h2m3 0h2m1 0h1m-36 1h7m2 0h2m1 0h1m2 0h2m1 0h1m1 0h1m1 0h1m2 0h1m2 0h1m1 0h1m1 0h1m1 0h3m-37 1h1m5 0h1m1 0h1m1 0h2m2 0h1m1 0h1m2 0h3m2 0h1m1 0h1m1 0h1m3 0h2m1 0h2m-37 1h1m1 0h3m1 0h1m1 0h1m1 0h1m2 0h1m4 0h1m3 0h11m1 0h1m-35 1h1m1 0h3m1 0h1m1 0h2m1 0h1m2 0h4m1 0h1m3 0h2m4 0h2m1 0h2m2 0h1m-37 1h1m1 0h3m1 0h1m1 0h1m1 0h1m2 0h2m2 0h1m4 0h1m2 0h3m7 0h2m-37 1h1m5 0h1m2 0h2m3 0h1m1 0h1m3 0h2m2 0h1m3 0h2m2 0h1m3 0h1m-37 1h7m1 0h2m1 0h4m2 0h2m3 0h5m2 0h1m2 0h1m1 0h3"/></svg></div>
+        <p class="t-meta">La gara inizierà quando<br>tutti i giocatori<br>saranno pronti.</p>
+      </div>
+      <div class="intro__foot">
+        <p class="t-meta muted">Dettagli. Istinto. Velocità.</p>
+        <p class="proto">Prototipo · giocatori e risposte di prova</p>
+      </div>
+    </section>
+
+    <!-- Centro: personaggi -->
+    <section class="lobby" aria-labelledby="lobby-title">
+      <div class="panel">
+        <div class="panel__top t-meta"><span data-lobby-eyebrow>Sei dei nostri?</span><span><span data-count>0</span> / 16 giocatori</span></div>
+        <h2 id="lobby-title" data-lobby-title>Scegli il tuo personaggio</h2>
+        <p class="t-meta lobby__sub" data-lobby-sub>Scansiona il QR code e unisciti alla gara</p>
+        <ul class="chars" data-chars role="list" style="list-style:none;padding:0"></ul>
+        <div class="bar is-waiting" data-bar>
+          <span class="bar__status" aria-live="polite"><span class="spinner" data-spinner aria-hidden="true"></span><span data-status>In attesa di altri giocatori…</span></span>
+          <button type="button" class="btn btn--primary" data-go>Dai il via <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Destra: la corsa -->
+    <section class="race" aria-labelledby="race-title">
+      <div class="race__head">
+        <h2 id="race-title" class="t-meta" style="font-size:14px;color:var(--text)">La corsa</h2>
+        <p class="t-meta muted" style="font-size:11px">In tempo reale</p>
+      </div>
+      <div class="road" data-road>
+        <svg viewBox="0 0 400 640" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+          <defs>
+            <pattern id="check" width="10" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="#F3EFE7"/><rect width="5" height="5" fill="#080B0B"/><rect x="5" y="5" width="5" height="5" fill="#080B0B"/></pattern>
+            <radialGradient id="startglow"><stop offset="0" stop-color="#FFE9B8" stop-opacity=".75"/><stop offset="1" stop-color="#FFE9B8" stop-opacity="0"/></radialGradient>
+            <linearGradient id="asph" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#2E2B28"/><stop offset="1" stop-color="#1E1D1B"/></linearGradient>
+          </defs>
+          <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <use href="#track" stroke="#000" stroke-opacity=".6" stroke-width="66" transform="translate(0 14)"/>
+            <use href="#track" stroke="#121110" stroke-width="62" transform="translate(0 8)"/>
+            <use href="#track" stroke="rgba(243,239,231,.38)" stroke-width="58"/>
+            <use href="#track" stroke="url(#asph)" stroke-width="54"/>
+            <path id="track" data-track d="M 196 612 L 290 601 C 380 590, 390 520, 300 500 S 70 470, 80 400 S 330 350, 330 290 S 90 240, 100 180 S 260 120, 330 70"/>
+            <use href="#track" stroke="rgba(243,239,231,.32)" stroke-width="1.6" stroke-dasharray="7 11"/>
+          </g>
+          <ellipse cx="290" cy="601" rx="50" ry="22" fill="url(#startglow)"/>
+          <rect x="287" y="578" width="5" height="34" rx="2.5" fill="#FFF3D6" transform="rotate(-7 290 601)"/>
+          <text class="road__label" x="290" y="638" text-anchor="middle">START</text>
+          <line x1="352" y1="72" x2="352" y2="6" stroke="#B9B4AB" stroke-width="2"/>
+          <path d="M352 6 h42 l-4 13 4 13 h-42 z" fill="url(#check)"/>
+          <text class="road__label" x="290" y="44" text-anchor="middle">TRAGUARDO</text>
+        </svg>
+        <div data-pawns></div>
+      </div>
+      <div class="board">
+        <div class="board__main">
+          <div class="board__head t-meta"><span>Classifica</span><span>Round <span data-round>0</span> / 10</span></div>
+          <ol data-board></ol>
+          <p class="board__empty" data-board-empty>La classifica parte con il primo round.</p>
+        </div>
+        <div class="board__motto"><span>Piccoli<br>dettagli.<br>Grandi<br>brand.</span><hr></div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+  (function () {
+    "use strict";
+    /* Prototipo: nessuna connessione. Giocatori e risposte sono di prova.
+       In fase 2 gli ingressi e le risposte arriveranno dai telefoni via Supabase Realtime. */
+    var ROUNDS = 10, MAX = 16, ROUND_MS = 3200;
+    var CHARS = ["Astro","Neko","Dino","Bot","Ducky","Bubu","Lapin","Panda","Pixel","Fungo","Ghost","Cool","Espresso","Cactus","Pingu","Luna"];
+    var IMG = function (i) { return "assets/personaggi/" + String(i + 1).padStart(2, "0") + "-" + CHARS[i].toLowerCase() + ".webp"; };
+    var DEMO_NAMES = ["Giulia","Marco","Sara","Davide","Chiara","Luca","Francesca","Andrea","Elisa","Matteo","Bianca","Nadia"];
+
+    var $ = function (s) { return document.querySelector(s); };
+    var charsEl = $("[data-chars]"), pawnsEl = $("[data-pawns]"), roadEl = $("[data-road]");
+    var track = $("[data-track]"), svg = roadEl.querySelector("svg");
+    var bar = $("[data-bar]"), statusEl = $("[data-status]"), go = $("[data-go]");
+    var players = [], round = 0, phase = "lobby", timers = [];
+    var TRACK_LEN = track.getTotalLength();
+    var START = 95;                                         // la linea di partenza: prima c'è il paddock
+
+    /* Griglia dei 16 personaggi, tutti spenti */
+    charsEl.innerHTML = CHARS.map(function (c, i) {
+      return '<li class="char" data-char="' + i + '"><div class="char__fig"><img src="' + IMG(i) + '" alt=""></div>' +
+        '<span class="char__name">' + c + '</span><span class="char__who" data-who></span></li>';
+    }).join("");
+
+    function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
+
+    /* ---------- Ingresso di un giocatore ---------- */
+    function join(name) {
+      if (players.length >= MAX) return;
+      var free = CHARS.map(function (_, i) { return i; }).filter(function (i) { return !players.some(function (p) { return p.char === i; }); });
+      var c = free[Math.floor(Math.random() * free.length)];
+      var p = { name: name, char: c, score: 0, time: 0, skill: 0.35 + Math.random() * 0.5, pos: 0, shown: 0 };
+      players.push(p);
+      var li = charsEl.querySelector('[data-char="' + c + '"]');
+      li.classList.add("is-taken", "is-new");
+      li.querySelector("[data-who]").textContent = name;
+      li.querySelector("img").alt = CHARS[c] + ", scelto da " + name;
+      setTimeout(function () { li.classList.remove("is-new"); }, 1000);
+
+      var pawn = document.createElement("div");
+      pawn.className = "pawn is-in"; pawn.innerHTML = '<img src="' + IMG(c) + '" alt="">';
+      pawnsEl.appendChild(pawn); p.el = pawn;
+      updateLobby(); placeAll(false);
+    }
+
+    function updateLobby() {
+      $("[data-count]").textContent = players.length;
+      var ready = players.length >= 2;
+      bar.classList.toggle("is-waiting", !ready && phase === "lobby");
+      if (phase !== "lobby") return;
+      statusEl.textContent = players.length === MAX ? "Tutti dentro. Dai il via."
+        : ready ? players.length + " pronti · in attesa di altri giocatori…" : "In attesa di altri giocatori…";
+    }
+
+    /* ---------- Pedine sulla strada ---------- */
+    function pointAt(progress, lane, laneCount) {
+      var L = Math.max(0.5, Math.min(TRACK_LEN - 0.5, START + (TRACK_LEN - START - 4) * progress));
+      var a = track.getPointAtLength(Math.max(0, L - 1)), b = track.getPointAtLength(Math.min(TRACK_LEN, L + 1));
+      var p = track.getPointAtLength(L);
+      var dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy) || 1;
+      var nx = -dy / len, ny = dx / len;                    // normale alla strada
+      var perRow = 3, row = Math.floor(lane / perRow), col = lane % perRow;
+      var cols = Math.min(perRow, laneCount - row * perRow);
+      var off = (col - (cols - 1) / 2) * 15;                // affiancate sulla carreggiata
+      var back = row * 18;                                  // file successive un po' indietro
+      return { x: p.x + nx * off - (dx / len) * back, y: p.y + ny * off - (dy / len) * back };
+    }
+
+    function toScreen(pt) {
+      var m = svg.getScreenCTM(), r = roadEl.getBoundingClientRect();
+      return { x: m.a * pt.x + m.e - r.left, y: m.d * pt.y + m.f - r.top };
+    }
+
+    function placeAll(animate) {
+      var groups = {};
+      players.forEach(function (p) { (groups[p.score] = groups[p.score] || []).push(p); });
+      var scale = svg.getScreenCTM().a;
+      document.documentElement.style.setProperty("--pawn-h", Math.round(Math.max(30, Math.min(60, 46 * scale))) + "px");
+      Object.keys(groups).forEach(function (k) {
+        var g = groups[k].sort(function (a, b) { return a.time - b.time; });
+        g.forEach(function (p, i) { p.lane = i; p.laneCount = g.length; });
+      });
+      players.forEach(function (p) {
+        var target = p.score / ROUNDS;
+        if (!animate || REDUCED) { p.shown = target; draw(p); return; }
+        var from = p.shown, t0 = performance.now(), dur = 1100;
+        (function step(now) {
+          var t = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - t, 3);
+          p.shown = from + (target - from) * e; draw(p);
+          if (t < 1) requestAnimationFrame(step);
+        })(t0);
+      });
+    }
+    function draw(p) {
+      var s = toScreen(pointAt(p.shown, p.lane || 0, p.laneCount || 1));
+      p.el.style.transform = "translate(" + s.x + "px," + s.y + "px) translate(-50%, -88%)";
+      p.el.style.zIndex = Math.round(s.y);
+    }
+    var REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /* ---------- Classifica ---------- */
+    function ranking() {
+      return players.slice().sort(function (a, b) { return b.score - a.score || a.time - b.time; });
+    }
+    function renderBoard() {
+      $("[data-round]").textContent = round;
+      var list = ranking().slice(0, 5);
+      $("[data-board-empty]").hidden = round > 0;
+      $("[data-board]").innerHTML = round === 0 ? "" : list.map(function (p, i) {
+        return '<li><span class="n">' + (i + 1) + '</span><img src="' + IMG(p.char) + '" alt=""><span class="who">' + p.name +
+          ' <span class="muted">· ' + CHARS[p.char] + '</span></span><span class="pts">' + p.score + " / " + round + "</span></li>";
+      }).join("");
+    }
+
+    /* ---------- Gara simulata ---------- */
+    function countdown(done) {
+      var o = document.createElement("div"); o.className = "overlay"; document.body.appendChild(o);
+      var seq = ["3", "2", "1", "Via!"], i = 0;
+      (function step() {
+        if (i === seq.length) { o.remove(); done(); return; }
+        o.innerHTML = '<span class="overlay__n' + (i === 3 ? " overlay__n--via" : "") + '">' + seq[i++] + "</span>";
+        later(step, 850);
+      })();
+    }
+
+    function startRace() {
+      phase = "race";
+      bar.classList.remove("is-waiting");
+      go.hidden = true;
+      $("[data-lobby-eyebrow]").textContent = "In gara";
+      $("[data-lobby-title]").textContent = "Si corre.";
+      $("[data-lobby-sub]").textContent = "Ogni risposta esatta è un passo verso il traguardo";
+      countdown(nextRound);
+    }
+
+    function nextRound() {
+      if (round >= ROUNDS) { finish(); return; }
+      round++;
+      statusEl.textContent = "Round " + round + " di " + ROUNDS + " · dettaglio in messa a fuoco…";
+      later(function () {
+        players.forEach(function (p) {
+          if (Math.random() < p.skill) { p.score++; p.time += 1 + Math.random() * 9; }
+        });
+        placeAll(true); renderBoard();
+        statusEl.textContent = "Round " + round + " di " + ROUNDS + " · risposte arrivate";
+        later(nextRound, ROUND_MS * 0.45);
+      }, ROUND_MS * 0.55);
+    }
+
+    function finish() {
+      phase = "end";
+      $("[data-spinner]").hidden = true;
+      statusEl.textContent = "Gara finita";
+      var w = ranking()[0];
+      var o = document.createElement("div"); o.className = "overlay";
+      o.innerHTML = '<div class="win"><p class="t-meta accent">Vince la gara</p><img src="' + IMG(w.char) + '" alt="">' +
+        '<p class="t-display">' + w.name + '</p><p class="t-meta muted">' + CHARS[w.char] + " · " + w.score + " su " + ROUNDS + " dettagli riconosciuti</p>" +
+        '<button type="button" class="btn btn--primary" data-again>Ricomincia la demo <svg aria-hidden="true"><use href="#i-arrow"/></svg></button></div>';
+      document.body.appendChild(o);
+      o.querySelector("[data-again]").addEventListener("click", function () { location.reload(); });
+    }
+
+    go.addEventListener("click", function () { if (phase === "lobby" && players.length >= 2) startRace(); });
+    window.addEventListener("resize", function () { placeAll(false); });
+
+    /* Ingressi di prova */
+    var d = 0;
+    DEMO_NAMES.forEach(function (n, i) { d += 700 + Math.random() * 1300; later(function () { if (phase === "lobby") join(n); }, d + 600); });
+    updateLobby(); renderBoard();
+  })();
+  </script>
+</body>
+</html>
