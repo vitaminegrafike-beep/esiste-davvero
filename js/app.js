@@ -284,6 +284,9 @@
     $("[data-reveal-title]").textContent = r.revealTitle;
     $("[data-reveal-text]").textContent = r.revealText;
 
+    var po = $("[data-payoff]");
+    po.hidden = !r.payoff;
+    po.textContent = r.payoff || "";
     var tr = $("[data-transition]");
     tr.hidden = !r.transition;
     tr.textContent = r.transition || "";

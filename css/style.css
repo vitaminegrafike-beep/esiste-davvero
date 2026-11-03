@@ -291,6 +291,7 @@ html[data-mode="landscape"] .landscape-block {
 .round__reveal > :nth-child(2) { animation-delay: 60ms; }
 .round__reveal > :nth-child(3) { animation-delay: 120ms; }
 .round__reveal > :nth-child(4) { animation-delay: 180ms; }
+.round__reveal > :nth-child(5) { animation-delay: 240ms; }
 .round__product { font-size: 17px; font-weight: 500; line-height: 1.35; color: var(--text); margin-top: var(--s2); }
 .round__info [data-description] { margin-top: var(--s4); }
 .round__info [data-category] { margin-top: var(--s6); }
@@ -299,6 +300,8 @@ html[data-mode="landscape"] .landscape-block {
 .verdict .icon { width: 16px; height: 16px; }
 .verdict.is-correct { color: var(--correct); }
 .verdict.is-wrong { color: var(--wrong); }
+.round__reveal [data-payoff] { margin-top: var(--s4); color: var(--text); }
+.round__reveal [data-payoff] + [data-transition] { margin-top: 0; font-size: 18px; }
 .round__reveal [data-transition] { margin-top: var(--s4); color: var(--text-muted); }
 
 @keyframes reveal-in {

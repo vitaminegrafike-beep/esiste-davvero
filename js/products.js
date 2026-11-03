@@ -15,6 +15,7 @@
  *  objectPosition  punto focale del taglio (fallback "center center")
  *  revealTitle   titolo del reveal
  *  revealText    testo del reveal
+ *  payoff        (opzionale) frase in evidenza dopo il testo del reveal
  *  transition    (opzionale) testo extra dopo il reveal dell'ultimo round
  */
 window.ROUNDS = [
@@ -40,7 +41,7 @@ window.ROUNDS = [
     category: "Robotics / Comfort Tech",
     image: "assets/images/02-amagami-ham-ham.webp",
     alt: "Peluche a forma di gattino che mordicchia la punta di un dito.",
-    objectPosition: "center 45%",
+    objectPosition: "center 55%",
     revealTitle: "Esiste davvero.",
     revealText: "Lo produce Yukai Engineering e sceglie tra circa due dozzine di modi di mordicchiare. In vendita dal 2022."
   },
@@ -65,8 +66,8 @@ window.ROUNDS = [
     description: "Un dispositivo sperimentale da leccare progettato per simulare differenti sensazioni di gusto.",
     category: "Experimental / Food Tech",
     image: "assets/images/04-norimaki-synthesizer.webp",
-    alt: "Dispositivo sperimentale a forma di bastoncino con cinque gel colorati in punta.",
-    objectPosition: "center center",
+    alt: "Una persona lecca la punta di un piccolo dispositivo cilindrico color rame.",
+    objectPosition: "center 45%",
     revealTitle: "Esiste davvero. Come prototipo.",
     revealText: "L’ha creato il professor Homei Miyashita alla Meiji University. Per ora si lecca solo in laboratorio."
   },
@@ -79,7 +80,7 @@ window.ROUNDS = [
     category: "Robotics / Wellbeing",
     image: "assets/images/05-qoobo.webp",
     alt: "Una persona sul divano accarezza un cuscino rotondo in pelliccia grigia con una coda.",
-    objectPosition: "58% center",
+    objectPosition: "center 70%",
     revealTitle: "Esiste davvero.",
     revealText: "È di Yukai Engineering: presentato nel 2017, in vendita dal 2018. Niente faccia, solo coda."
   },
@@ -105,7 +106,7 @@ window.ROUNDS = [
     category: "Wearable / Food Tech",
     image: "assets/images/07-tomatan.webp",
     alt: "Un uomo indossa sulle spalle un robot a forma di pomodoro che gli porge un pomodoro alla bocca.",
-    objectPosition: "center 25%",
+    objectPosition: "center 45%",
     revealTitle: "Esiste davvero. Per una maratona.",
     revealText: "Kagome lo ha costruito con Maywa Denki per la Maratona di Tokyo 2015: circa 8 kg, sei pomodori a bordo."
   },
@@ -113,15 +114,16 @@ window.ROUNDS = [
     id: "orvyn-o1",
     exists: false,
     brand: "ORVYN",
-    product: "O1 Automatic",
-    description: "Un orologio automatico svizzero in titanio, con quadrante senza numeri e un design ridotto all’essenziale.",
-    category: "Orologi",
+    product: "O1",
+    description: "Un orologio senza lancette, numeri o display che comunica l’ora attraverso sequenze di vibrazioni sul polso.",
+    category: "Haptic Watch / Digital Wellbeing",
     image: "assets/images/08-orvyn-o1.webp",
-    alt: "Orologio con cassa in titanio e quadrante nero completamente vuoto, senza lancette, appoggiato su un blocco di pietra.",
+    alt: "Orologio con cassa metallica satinata e quadrante nero completamente vuoto, senza lancette, numeri né display, con un piccolo riferimento tattile in alto.",
     objectPosition: "center 45%",
-    revealTitle: "ORVYN non esiste.",
-    revealText: "Anche questo prodotto è stato inventato. Ma l’idea da cui nasce sì.",
-    transition: "Ne riparliamo tra un minuto."
+    revealTitle: "ORVYN O1 non esiste.",
+    revealText: "Ce lo siamo inventato. Un orologio pensato per percepire il tempo senza doverlo guardare.",
+    payoff: "Niente schermo. Niente lancette. Solo il tempo.",
+    transition: "Ma sull’orologio torniamo tra un minuto."
   }
 ];
 
