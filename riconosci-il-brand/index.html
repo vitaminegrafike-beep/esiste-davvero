@@ -6,19 +6,30 @@
   <meta name="theme-color" content="#080B0B">
   <meta name="color-scheme" content="dark">
   <meta name="robots" content="noindex">
-  <title>Riconosci il brand</title>
-  <meta name="description" content="Un brand si riconosce da un dettaglio.">
+  <title>Zoom Race</title>
+  <meta name="description" content="Quanto ci metti a riconoscere i grandi brand?">
   <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/style.css">
   <style>
-    /* Prototipo del nuovo gioco: un round dimostrativo, stessa grafica di "Esiste davvero?". */
+    /* Zoom Race da telefono: 10 round, stessa grafica di "Esiste davvero?". */
+    .round__top { justify-content: space-between; }
+    .round__top .t-meta + .t-meta { margin-left: auto; color: var(--text); font-variant-numeric: tabular-nums; }
+    .screen--splash .t-display { text-transform: uppercase; }
+    .end { display: flex; flex-direction: column; gap: var(--s4); padding: var(--s8) var(--gutter) var(--s6); flex: 1; }
+    .end .t-score { margin: var(--s2) 0; }
+    .recap { list-style: none; margin: var(--s2) 0 0; padding: 0; border-top: 1px solid var(--border); }
+    .recap li { display: grid; grid-template-columns: 28px 1fr auto; gap: var(--s3); align-items: center; min-height: 40px; border-bottom: 1px solid var(--border); font-size: 15px; }
+    .recap .n { color: var(--text-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+    .recap .pts { font-variant-numeric: tabular-nums; }
+    .recap .pts.is-zero { color: var(--text-muted); }
     .dt { display: flex; flex-direction: column; height: 100svh; max-width: 430px; margin: 0 auto; padding-top: env(safe-area-inset-top); }
     .dt .media { flex: 1 1 auto; min-height: 180px; height: auto; max-height: min(125vw, 537px); }
     .dt .media img {
-      opacity: 1; transform-origin: var(--focus, 50% 50%);
-      transform: scale(var(--zoom, 2.6)); filter: blur(calc(var(--blur, 1) * 22px));
+      opacity: 1; object-position: var(--focus, 50% 50%); transform-origin: var(--focus, 50% 50%);
+      transform: scale(var(--zoom, 1)); filter: blur(var(--blur, 45px));
       will-change: filter, transform;
     }
+    .dt .media img.is-hidden { opacity: 0; }
     .dt .media.is-revealed img { transition: transform 900ms var(--ease), filter 500ms var(--ease); }
 
     /* Timer: numero in alto a destra + barra che si consuma sotto l'immagine */
@@ -98,26 +109,26 @@
       <svg class="logo" aria-hidden="true"><use href="#i-logo"/></svg>
       <div class="splash__content">
         <p class="t-meta accent splash__eyebrow">Un piccolo gioco per grandi osservatori</p>
-        <h1 class="t-display">Riconosci<br>il brand.</h1>
-        <p class="t-lead">Ti basta un dettaglio?</p>
-        <p class="t-body muted">8 dettagli, 3 risposte. La foto si mette a fuoco piano piano: più rispondi presto, più punti fai.</p>
+        <h1 class="t-display">Zoom<br><em>Race</em></h1>
+        <p class="t-lead">Quanto ci metti a riconoscere i grandi brand?</p>
+        <p class="t-body muted">10 dettagli, 3 risposte, 8 secondi ciascuno. La foto si mette a fuoco piano piano: più rispondi presto, più punti fai.</p>
       </div>
     </div>
     <div class="actions">
       <button type="button" class="btn btn--primary" data-go>Inizia <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
-      <p class="t-meta muted splash__footer">Prototipo · solo il primo round</p>
+      <p class="t-meta muted splash__footer">Dettagli. Istinto. Velocità.</p>
     </div>
   </section>
 
   <main class="dt" data-root data-phase="ready" hidden>
     <header class="round__header">
-      <div class="round__top"><span class="home" aria-hidden="true"><svg class="logo"><use href="#i-logo"/></svg></span><p class="t-meta">Round 1 di 8</p></div>
-      <div class="progress"><span class="progress__fill" style="width:12.5%"></span></div>
+      <div class="round__top"><span class="home" aria-hidden="true"><svg class="logo"><use href="#i-logo"/></svg></span><p class="t-meta" data-counter>Round 1 di 10</p><p class="t-meta" data-total>0 pt</p></div>
+      <div class="progress"><span class="progress__fill" data-progress style="width:10%"></span></div>
     </header>
 
     <figure class="media" data-media>
-      <img data-img src="assets/images/placeholder-orologio.webp" alt="Dettaglio ravvicinato di un prodotto, sfocato." draggable="false">
-      <span class="timer" data-timer aria-hidden="true">10,0</span>
+      <img data-img src="" alt="" draggable="false">
+      <span class="timer" data-timer aria-hidden="true">8,0</span>
       <div class="countdown" data-countdown>
         <button type="button" class="btn btn--primary" data-start>Sono pronto</button>
       </div>
@@ -143,115 +154,159 @@
         <button type="button" class="opt" data-opt="1" aria-disabled="true"><span class="opt__key">B</span><span data-label>Rolex</span><svg class="opt__icon" aria-hidden="true"><use href="#i-tick"/></svg></button>
         <button type="button" class="opt" data-opt="2" aria-disabled="true"><span class="opt__key">C</span><span data-label>Tudor</span><svg class="opt__icon" aria-hidden="true"><use href="#i-tick"/></svg></button>
       </div>
-      <button type="button" class="btn btn--primary" data-again hidden>Riprova il round <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
-      <p class="t-small muted proto-note">Prototipo · immagine segnaposto</p>
+      <button type="button" class="btn btn--primary" data-next hidden><span data-next-label>Prossimo round</span> <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+      <p class="t-small muted proto-note">Prototipo · partita singola, senza regia collegata</p>
     </div>
   </main>
 
+  <section class="dt" data-end hidden>
+    <div class="end">
+      <p class="t-meta accent">Il tuo risultato</p>
+      <p class="t-score" data-end-score>0</p>
+      <p class="t-body muted" data-end-text></p>
+      <ol class="recap" data-recap></ol>
+    </div>
+    <div class="actions"><button type="button" class="btn btn--primary" data-replay>Rigioca <svg aria-hidden="true"><use href="#i-arrow"/></svg></button></div>
+  </section>
+
+  <script src="js/rounds.js"></script>
   <script>
   (function () {
-    /* Dati del round: in produzione arriveranno da un file come products.js */
-    var ROUND = {
-      correct: 1,
-      focus: "76% 50%",          // punto del dettaglio da cui parte lo zoom
-      zoom: 3,                 // ingrandimento iniziale (dettaglio)
-      text: "Lunetta girevole, lente sulla data, indici luminosi: un dettaglio basta. Immagine e testo sono segnaposto, qui andranno le tue foto."
-    };
-    var DURATION = 10000;        // 10 secondi
-    var MAX = 100, MIN = 10;     // punti: 100 se rispondi subito, 10 all'ultimo istante
+    "use strict";
+    var ROUNDS = window.ZR_ROUNDS, DURATION = window.ZR_ROUND_MS, STEPS = window.ZR_BLUR_STEPS, POINTS = window.ZR_POINTS;
+    var TOTAL = ROUNDS.length;
 
     var $ = function (s) { return document.querySelector(s); };
     var root = $("[data-root]"), media = $("[data-media]"), img = $("[data-img]");
     var timer = $("[data-timer]"), bar = $("[data-timebar]"), cd = $("[data-countdown]");
     var opts = Array.prototype.slice.call(document.querySelectorAll("[data-opt]"));
-    var t0 = 0, raf = 0, done = false;
     var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var idx = 0, t0 = 0, raf = 0, done = true, results = [];
 
-    media.style.setProperty("--focus", ROUND.focus);
+    /* Precarica tutte le immagini */
+    ROUNDS.forEach(function (r) { var i = new Image(); i.src = r.image; });
 
-    function setProgress(p) {               // p da 0 (inizio) a 1 (fine)
-      var sharp = Math.pow(1 - p, 1.5);     // all'inizio sfoca molto, poi si chiarisce sempre più in fretta
-      media.style.setProperty("--blur", sharp.toFixed(3));
-      media.style.setProperty("--zoom", (ROUND.zoom - (ROUND.zoom - 1.8) * p).toFixed(3));
+    /* Sfocatura continua: interpola tra i passi distribuiti sugli 8 secondi, senza mai arrivare a 0 */
+    function blurAt(p) {
+      var x = Math.min(1, Math.max(0, p)) * (STEPS.length - 1), k = Math.floor(x), f = x - k;
+      if (k >= STEPS.length - 1) return STEPS[STEPS.length - 1];
+      return STEPS[k] + (STEPS[k + 1] - STEPS[k]) * f;
+    }
+    function fmt(sec) { return sec.toFixed(1).replace(".", ","); }
+    function totalPts() { return results.reduce(function (a, r) { return a + r.points; }, 0); }
+
+    function setProgress(p) {
+      media.style.setProperty("--blur", blurAt(p).toFixed(2) + "px");
       var left = Math.max(0, 1 - p);
       bar.style.setProperty("--left", left.toFixed(4));
-      timer.textContent = (left * DURATION / 1000).toFixed(1).replace(".", ",");
-      var low = left < 0.3;
+      timer.textContent = fmt(left * DURATION / 1000);
+      var low = left < 0.25;
       timer.classList.toggle("is-low", low); bar.classList.toggle("is-low", low);
     }
 
-    function reset() {
-      done = false; cancelAnimationFrame(raf);
+    function load(i) {
+      idx = i; done = false;
+      var r = ROUNDS[i];
+      cancelAnimationFrame(raf);
       root.setAttribute("data-phase", "ready");
       media.classList.remove("is-revealed");
+      media.style.setProperty("--focus", r.focus);
+      media.style.setProperty("--zoom", r.zoom);
+      img.src = r.image; img.alt = r.alt;
       setProgress(0);
-      opts.forEach(function (o) { o.className = "opt"; o.setAttribute("aria-disabled", "true"); });
+      $("[data-counter]").textContent = "Round " + (i + 1) + " di " + TOTAL;
+      $("[data-progress]").style.width = ((i + 1) / TOTAL * 100) + "%";
+      $("[data-total]").textContent = totalPts() + " pt";
+      opts.forEach(function (o, k) {
+        o.className = "opt"; o.setAttribute("aria-disabled", "true");
+        o.querySelector("[data-label]").textContent = r.options[k];
+      });
       $("[data-question]").hidden = false; $("[data-result]").hidden = true;
-      $("[data-options]").hidden = false; $("[data-again]").hidden = true;
-      cd.hidden = false; cd.innerHTML = '<button type="button" class="btn btn--primary" data-start>Sono pronto</button>';
+      $("[data-options]").hidden = false; $("[data-next]").hidden = true;
     }
 
-    function countdown() {
+    function countdown(then) {
+      cd.hidden = false;
       var n = 3;
-      function step() {
-        if (n === 0) { cd.hidden = true; start(); return; }
+      (function step() {
+        if (n === 0) { cd.hidden = true; then(); return; }
         cd.innerHTML = '<span class="countdown__n is-pop">' + n + "</span>";
         n--; setTimeout(step, reduce ? 300 : 800);
-      }
-      step();
+      })();
     }
 
+    /* Le opzioni compaiono subito e la sfocatura parte nello stesso istante */
     function start() {
+      cd.hidden = true;
       root.setAttribute("data-phase", "play");
       opts.forEach(function (o) { o.removeAttribute("aria-disabled"); });
       t0 = performance.now();
       (function tick(now) {
         var p = Math.min(1, (now - t0) / DURATION);
         setProgress(p);
-        if (p >= 1) { finish(null, p); return; }
+        if (p >= 1) { finish(null, DURATION); return; }
         raf = requestAnimationFrame(tick);
       })(t0);
     }
 
-    function finish(choice, p) {
+    function finish(choice, ms) {
       if (done) return; done = true; cancelAnimationFrame(raf);
+      var r = ROUNDS[idx];
       root.setAttribute("data-phase", "result");
-      var correct = choice === ROUND.correct;
-      var pts = correct ? Math.round(MAX - (MAX - MIN) * p) : 0;
+      var correct = choice === r.correct;
+      var pts = choice === null ? 0 : POINTS(ms / 1000, correct);
+      results[idx] = { choice: choice, ms: ms, correct: correct, points: pts };
       if (navigator.vibrate) navigator.vibrate(correct ? 12 : [10, 40, 10]);
 
-      // Rivelazione: la foto va a fuoco e si allarga sul prodotto intero
+      // Reveal: a fuoco e prodotto intero
       media.classList.add("is-revealed");
-      media.style.setProperty("--blur", 0); media.style.setProperty("--zoom", 1);
+      media.style.setProperty("--blur", "0px"); media.style.setProperty("--zoom", 1);
 
       opts.forEach(function (o, k) {
         o.setAttribute("aria-disabled", "true");
-        if (k === ROUND.correct) { o.classList.add("is-right"); o.querySelector("use").setAttribute("href", "#i-tick"); }
+        if (k === r.correct) { o.classList.add("is-right"); o.querySelector("use").setAttribute("href", "#i-tick"); }
         else if (k === choice) { o.classList.add("is-wrong"); o.querySelector("use").setAttribute("href", "#i-miss"); }
         else o.classList.add("is-dim");
       });
 
+      var brand = r.options[r.correct];
       $("[data-verdict-icon]").setAttribute("href", correct ? "#i-tick" : "#i-miss");
       $("[data-verdict-text]").textContent = choice === null ? "Tempo scaduto." : (correct ? "Esatto." : "Non proprio.");
       var pe = $("[data-points]"); pe.textContent = "+" + pts; pe.classList.toggle("is-zero", !pts);
       $("[data-result-text]").textContent = correct
-        ? "Riconosciuto in " + (p * DURATION / 1000).toFixed(1).replace(".", ",") + " secondi. " + ROUND.text
-        : ROUND.text;
+        ? "Era " + brand + ". Riconosciuto in " + fmt(ms / 1000) + " secondi."
+        : "Era " + brand + ".";
+      $("[data-total]").textContent = totalPts() + " pt";
       $("[data-question]").hidden = true; $("[data-result]").hidden = false;
-      setTimeout(function () { $("[data-again]").hidden = false; }, reduce ? 0 : 600);
+      $("[data-next-label]").textContent = idx === TOTAL - 1 ? "Vedi il risultato" : "Prossimo round";
+      setTimeout(function () { $("[data-next]").hidden = false; }, reduce ? 0 : 600);
+    }
+
+    function showEnd() {
+      root.hidden = true; $("[data-end]").hidden = false; window.scrollTo(0, 0);
+      var tot = totalPts(), right = results.filter(function (r) { return r.correct; }).length;
+      $("[data-end-score]").textContent = tot + " pt";
+      $("[data-end-text]").textContent = right + " brand riconosciuti su " + TOTAL + ".";
+      $("[data-recap]").innerHTML = ROUNDS.map(function (r, i) {
+        var x = results[i];
+        return '<li><span class="n">' + String(i + 1).padStart(2, "0") + "</span><span>" + r.options[r.correct] +
+          '</span><span class="pts' + (x.points ? "" : " is-zero") + '">' + (x.points ? "+" + x.points : (x.choice === null ? "tempo scaduto" : "0")) + "</span></li>";
+      }).join("");
     }
 
     document.addEventListener("click", function (e) {
-      if (e.target.closest("[data-go]")) { $("[data-splash]").hidden = true; root.hidden = false; window.scrollTo(0, 0); return; }
-      if (e.target.closest("[data-start]")) { countdown(); return; }
-      if (e.target.closest("[data-again]")) { reset(); return; }
+      if (e.target.closest("[data-go]")) { $("[data-splash]").hidden = true; root.hidden = false; window.scrollTo(0, 0); load(0); return; }
+      if (e.target.closest("[data-start]")) { countdown(start); return; }
+      if (e.target.closest("[data-next]")) {
+        if (idx === TOTAL - 1) { showEnd(); return; }
+        load(idx + 1); start(); return;
+      }
+      if (e.target.closest("[data-replay]")) { results = []; $("[data-end]").hidden = true; root.hidden = false; load(0); cd.innerHTML = '<button type="button" class="btn btn--primary" data-start>Sono pronto</button>'; cd.hidden = false; return; }
       var o = e.target.closest("[data-opt]");
-      if (o && o.getAttribute("aria-disabled") !== "true") {
-        finish(+o.getAttribute("data-opt"), Math.min(1, (performance.now() - t0) / DURATION));
+      if (o && o.getAttribute("aria-disabled") !== "true" && !done) {
+        finish(+o.getAttribute("data-opt"), Math.min(DURATION, performance.now() - t0));   // risposta bloccata al primo tocco
       }
     });
-
-    reset();
   })();
   </script>
 </body>
