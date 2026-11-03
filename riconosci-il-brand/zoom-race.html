@@ -108,7 +108,7 @@
     .board__motto hr { width: 32px; height: 1px; border: 0; background: var(--text-muted); margin: 0; }
 
     /* ---------- Sovrapposizioni ---------- */
-    .overlay { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; background: rgba(8,11,11,.82); text-align: center; }
+    .overlay { position: fixed; inset: 0; z-index: 5000; display: grid; place-items: center; background: rgba(8,11,11,.82); text-align: center; }
     .overlay__n { font-family: var(--serif); font-size: clamp(140px, 18vw, 280px); line-height: 1; animation: pop 900ms var(--ease) both; }
     .overlay__n--via { font-style: italic; }
     @keyframes pop { from { opacity: 0; transform: scale(1.4); } 30% { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(.92); } }
@@ -116,6 +116,61 @@
     .win img { height: clamp(160px, 28vh, 280px); filter: drop-shadow(0 18px 30px rgba(0,0,0,.6)); }
     .win .t-display { font-size: clamp(56px, 6vw, 96px); }
     .win .btn { width: auto; margin-top: var(--s4); }
+
+    /* ---------- Fasi del round (pannello centrale) ---------- */
+    .panel { position: relative; }
+    .panel__top .t-meta, .panel__top [data-eyebrow] { font-variant-numeric: tabular-nums; }
+    .view { flex: 1; min-height: 0; margin: clamp(12px, 2.4vh, 28px) 0; display: flex; align-items: center; justify-content: center; }
+    .view[hidden], .chars[hidden] { display: none; }
+    /* Durante il round: chi ha risposto si illumina */
+    .panel[data-phase="round"] .char.is-taken img { opacity: .5; filter: brightness(.7); }
+    .panel[data-phase="round"] .char.is-taken .char__fig::before { opacity: .25; }
+    .char.is-answered img { opacity: 1 !important; filter: drop-shadow(0 0 18px rgba(255, 233, 184, .55)) brightness(1.08) !important; transform: translateY(-4%) !important; }
+    .char.is-answered .char__fig::before { opacity: 1 !important; background: radial-gradient(closest-side, rgba(255, 233, 184, .55), transparent); width: 90%; }
+    .char.is-answered .char__who { color: #FFE9B8; }
+    .bar__count { font-family: var(--serif); font-size: 26px; letter-spacing: 0; color: var(--text); text-transform: none; font-variant-numeric: tabular-nums lining-nums; }
+
+    .cd { font-family: var(--serif); font-size: clamp(140px, min(16vw, 30vh), 280px); line-height: 1; }
+    .cd.is-pop { animation: pop 900ms var(--ease) both; }
+
+    .reveal { position: relative; height: 100%; max-height: 100%; aspect-ratio: 4 / 3; max-width: 100%; border-radius: 16px; overflow: hidden; background: var(--surface); border: 1px solid var(--line); }
+    .reveal img { width: 100%; height: 100%; object-fit: cover; display: block; object-position: var(--focus, 50% 50%); transform-origin: var(--focus, 50% 50%);
+      transform: scale(var(--zoom, 1)); filter: blur(var(--blur, 0px)); transition: transform 1400ms var(--ease), filter 700ms var(--ease); }
+    .reveal__tag { position: absolute; left: 50%; bottom: clamp(14px, 3vh, 28px); transform: translateX(-50%); display: grid; justify-items: center; gap: 6px;
+      padding: clamp(10px, 1.6vh, 16px) clamp(22px, 2.4vw, 40px); border-radius: 16px; background: rgba(8, 11, 11, .82); border: 1px solid var(--line); white-space: nowrap;
+      animation: reveal-in 500ms var(--ease) 500ms both; }
+    .reveal__tag .t-meta { color: var(--text-muted); letter-spacing: .24em; }
+    .reveal__brand { font-family: var(--serif); font-size: clamp(30px, min(3.2vw, 6vh), 60px); line-height: 1; }
+
+    .standings { list-style: none; margin: 0; padding: 0; width: min(100%, 720px); display: grid; gap: clamp(6px, 1.2vh, 12px); }
+    .standings li { display: grid; grid-template-columns: 56px 64px 1fr auto auto; align-items: center; gap: var(--s4); height: clamp(52px, 9vh, 84px);
+      padding: 0 var(--s6); border: 1px solid var(--line); border-radius: 14px; background: rgba(243, 239, 231, .03);
+      animation: reveal-in 450ms var(--ease) both; }
+    .standings li:nth-child(1) { border-color: rgba(255, 233, 184, .5); background: rgba(255, 233, 184, .06); }
+    .standings .pos { font-family: var(--serif); font-size: clamp(28px, 4.4vh, 40px); line-height: 1; font-variant-numeric: tabular-nums lining-nums; }
+    .standings img { height: clamp(44px, 7.6vh, 72px); width: auto; justify-self: center; }
+    .standings .who { font-size: clamp(15px, 1.2vw, 20px); letter-spacing: .1em; text-transform: uppercase; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .standings .gain { color: var(--text-muted); font-variant-numeric: tabular-nums; font-size: 15px; }
+    .standings .tot { font-family: var(--serif); font-size: clamp(22px, 3.4vh, 32px); font-variant-numeric: tabular-nums lining-nums; min-width: 4.2ch; text-align: right; }
+
+    .podium { display: grid; justify-items: center; gap: clamp(12px, 2.4vh, 28px); width: min(92vw, 980px); animation: reveal-in 600ms var(--ease) both; }
+    .podium__title { font-family: var(--serif); font-weight: 400; font-size: clamp(48px, min(6vw, 11vh), 108px); line-height: .95; text-transform: uppercase; text-align: center; }
+    .podium__title em { font-style: italic; }
+    .podium__steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; gap: clamp(12px, 2vw, 32px); width: 100%; }
+    .step { display: grid; justify-items: center; gap: 8px; text-align: center; min-width: 0; }
+    .step img { height: clamp(110px, 24vh, 240px); width: auto; filter: drop-shadow(0 18px 30px rgba(0,0,0,.6)); animation: reveal-in 600ms var(--ease) both; }
+    .step__name { font-size: clamp(14px, 1.3vw, 20px); letter-spacing: .12em; text-transform: uppercase; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .step__pts { color: var(--text-muted); font-variant-numeric: tabular-nums; font-size: 14px; }
+    .step__block { width: 100%; display: grid; place-items: center; border: 1px solid var(--line); border-bottom: 0; border-radius: 14px 14px 0 0;
+      background: linear-gradient(to bottom, rgba(243, 239, 231, .08), rgba(243, 239, 231, .02)); font-family: var(--serif); font-size: clamp(36px, 6vh, 64px); }
+    .step--1 .step__block { height: clamp(90px, 18vh, 170px); border-color: rgba(255, 233, 184, .5); background: linear-gradient(to bottom, rgba(255, 233, 184, .16), rgba(255, 233, 184, .02)); }
+    .step--2 .step__block { height: clamp(64px, 12vh, 120px); }
+    .step--3 .step__block { height: clamp(46px, 8vh, 84px); }
+    .step--empty { visibility: hidden; }
+    .podium .btn { width: auto; }
+    .overlay[data-podium] { background: rgba(8, 11, 11, .96); }
+    .step__block { background-color: #121514; }
+    .podium__steps { border-bottom: 1px solid var(--line); }
 
     @media (max-width: 1500px) { .board__motto { display: none; } }
     @media (max-height: 800px) { .board li { height: 28px; } .board__main { padding: var(--s3) var(--s4); } .race { gap: var(--s2); } }
@@ -145,19 +200,24 @@
       </div>
       <div class="intro__foot">
         <p class="t-meta muted">Dettagli. Istinto. Velocità.</p>
-        <p class="proto">Prototipo · giocatori e risposte di prova</p>
+        <p class="proto" data-mode-note></p>
       </div>
     </section>
 
     <!-- Centro: personaggi -->
     <section class="lobby" aria-labelledby="lobby-title">
-      <div class="panel">
+      <div class="panel" data-panel data-phase="lobby">
         <div class="panel__top t-meta"><span data-lobby-eyebrow>Sei dei nostri?</span><span><span data-count>0</span> / 16 giocatori</span></div>
         <h2 id="lobby-title" data-lobby-title>Scegli il tuo personaggio</h2>
         <p class="t-meta lobby__sub" data-lobby-sub>Scansiona il QR code e unisciti alla gara</p>
         <ul class="chars" data-chars role="list" style="list-style:none;padding:0"></ul>
+        <div class="view" data-view="countdown" hidden><span class="cd" data-cd>3</span></div>
+        <div class="view" data-view="reveal" hidden>
+          <figure class="reveal" data-reveal><img data-reveal-img src="" alt=""><figcaption class="reveal__tag"><span class="t-meta">Risposta</span><span class="reveal__brand" data-reveal-brand></span></figcaption></figure>
+        </div>
+        <div class="view" data-view="standings" hidden><ol class="standings" data-standings></ol></div>
         <div class="bar is-waiting" data-bar>
-          <span class="bar__status" aria-live="polite"><span class="spinner" data-spinner aria-hidden="true"></span><span data-status>In attesa di altri giocatori…</span></span>
+          <span class="bar__status" aria-live="polite"><span class="spinner" data-spinner aria-hidden="true"></span><span data-status>Apro la gara…</span></span>
           <button type="button" class="btn btn--primary" data-go>Dai il via <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
         </div>
       </div>
@@ -167,7 +227,7 @@
     <section class="race" aria-labelledby="race-title">
       <div class="race__head">
         <h2 id="race-title" class="t-meta" style="font-size:14px;color:var(--text)">La corsa</h2>
-        <p class="t-meta muted" style="font-size:11px">In tempo reale</p>
+        <p class="t-meta muted" style="font-size:11px">Si muove dopo ogni round</p>
       </div>
       <div class="road" data-road>
         <svg viewBox="0 0 400 640" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
@@ -195,7 +255,7 @@
       </div>
       <div class="board">
         <div class="board__main">
-          <div class="board__head t-meta"><span>Classifica</span><span>Round <span data-round>0</span> / 10</span></div>
+          <div class="board__head t-meta"><span>Classifica</span><span>Round <span data-round>0</span> / <span data-total>10</span></span></div>
           <ol data-board></ol>
           <p class="board__empty" data-board-empty>La classifica parte con il primo round.</p>
         </div>
@@ -205,58 +265,109 @@
   </div>
 
   <script src="js/rounds.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/net.js"></script>
   <script>
   (function () {
     "use strict";
-    /* Prototipo: nessuna connessione. Giocatori e risposte sono di prova.
-       In fase 2 gli ingressi e le risposte arriveranno dai telefoni via Supabase Realtime. */
-    var ROUNDS = 10, MAX = 16, ROUND_MS = 3200;
+    /* Regia: fa da direttore della partita. Scrive le fasi sul server (o, in modalità prova, è il server),
+       mostra lobby, round, reveal, corsa, classifica e podio. Le pedine si muovono solo dopo il reveal. */
+    var NET = window.ZRNet, ROUNDS = window.ZR_ROUNDS, TOTAL = ROUNDS.length, MAX = 16;
+    var T = { countdown: 3000, grace: 600, reveal: 3200, race: 2600, standings: 3800, final: 4200 };
     var CHARS = ["Astro","Neko","Dino","Bot","Ducky","Bubu","Lapin","Panda","Pixel","Fungo","Ghost","Cool","Espresso","Cactus","Pingu","Luna"];
     var IMG = function (i) { return "assets/personaggi/" + String(i + 1).padStart(2, "0") + "-" + CHARS[i].toLowerCase() + ".webp"; };
-    var DEMO_NAMES = ["Giulia","Marco","Sara","Davide","Chiara","Luca","Francesca","Andrea","Elisa","Matteo","Bianca","Nadia"];
+    var DEMO_NAMES = ["Giulia","Marco","Sara","Davide","Chiara","Luca","Francesca","Andrea","Elisa","Matteo","Bianca","Nadia","Paolo","Irene","Tommaso","Greta"];
+    var params = new URLSearchParams(location.search);
+    var BOTS = params.has("bots") ? Math.max(0, Math.min(MAX, +params.get("bots") || 0)) : (NET.mode === "local" ? 10 : 0);
+    var REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     var $ = function (s) { return document.querySelector(s); };
-    var charsEl = $("[data-chars]"), pawnsEl = $("[data-pawns]"), roadEl = $("[data-road]");
+    var panel = $("[data-panel]"), charsEl = $("[data-chars]"), pawnsEl = $("[data-pawns]"), roadEl = $("[data-road]");
     var track = $("[data-track]"), svg = roadEl.querySelector("svg");
     var bar = $("[data-bar]"), statusEl = $("[data-status]"), go = $("[data-go]");
-    var players = [], round = 0, phase = "lobby", timers = [];
     var TRACK_LEN = track.getTotalLength();
     var START = 95;                                         // la linea di partenza: prima c'è il paddock
+
+    var gameId = null, game = null, players = [], unwatch = null;
+    var phase = "boot", running = false, boardRound = 0;
+    var view = {};                                          // per giocatore: pedina e punteggio mostrato
+    var bots = [];                                          // giocatori simulati: { id, secret, skill }
+
+    $("[data-total]").textContent = TOTAL;
+    $("[data-mode-note]").textContent = NET.mode === "local" ? "Modalità prova · giocatori simulati" : (BOTS ? "Gara dal vivo · con " + BOTS + " giocatori simulati" : "");
 
     /* Griglia dei 16 personaggi, tutti spenti */
     charsEl.innerHTML = CHARS.map(function (c, i) {
       return '<li class="char" data-char="' + i + '"><div class="char__fig"><img src="' + IMG(i) + '" alt=""></div>' +
         '<span class="char__name">' + c + '</span><span class="char__who" data-who></span></li>';
     }).join("");
+    ROUNDS.forEach(function (r) { var i = new Image(); i.src = r.image; });
 
-    function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
-
-    /* ---------- Ingresso di un giocatore ---------- */
-    function join(name) {
-      if (players.length >= MAX) return;
-      var free = CHARS.map(function (_, i) { return i; }).filter(function (i) { return !players.some(function (p) { return p.char === i; }); });
-      var c = free[Math.floor(Math.random() * free.length)];
-      var p = { name: name, char: c, score: 0, right: 0, time: 0, skill: 0.35 + Math.random() * 0.5, pos: 0, shown: 0 };
-      players.push(p);
-      var li = charsEl.querySelector('[data-char="' + c + '"]');
-      li.classList.add("is-taken", "is-new");
-      li.querySelector("[data-who]").textContent = name;
-      li.querySelector("img").alt = CHARS[c] + ", scelto da " + name;
-      setTimeout(function () { li.classList.remove("is-new"); }, 1000);
-
-      var pawn = document.createElement("div");
-      pawn.className = "pawn is-in"; pawn.innerHTML = '<img src="' + IMG(c) + '" alt="">';
-      pawnsEl.appendChild(pawn); p.el = pawn;
-      updateLobby(); placeAll(false);
+    function wait(ms) { return new Promise(function (res) { setTimeout(res, ms); }); }
+    function setText(sel, t) { $(sel).textContent = t; }
+    function head(eyebrow, title, sub) { setText("[data-lobby-eyebrow]", eyebrow); setText("[data-lobby-title]", title); setText("[data-lobby-sub]", sub || ""); }
+    function showView(name) {
+      charsEl.hidden = name !== "chars";
+      Array.prototype.forEach.call(document.querySelectorAll("[data-view]"), function (v) { v.hidden = v.getAttribute("data-view") !== name; });
+    }
+    function setPhase(p) { phase = p; panel.setAttribute("data-phase", p); }
+    function status(html, spinner) {
+      statusEl.innerHTML = html;
+      $("[data-spinner]").hidden = !spinner;
     }
 
-    function updateLobby() {
+    /* ---------- Stato dal server ---------- */
+    function onSnap(snap) {
+      if (!snap.game) return;
+      game = snap.game; players = snap.players;
+      syncPlayers();
+      if (phase === "lobby") updateLobby();
+      if (phase === "round") updateAnswered();
+    }
+
+    function syncPlayers() {
+      var seen = {};
+      players.forEach(function (p) {
+        seen[p.id] = 1;
+        if (view[p.id]) return;
+        var li = charsEl.querySelector('[data-char="' + p.avatar + '"]');
+        li.classList.add("is-taken", "is-new");
+        li.querySelector("[data-who]").textContent = p.nickname;
+        li.querySelector("img").alt = CHARS[p.avatar] + ", scelto da " + p.nickname;
+        setTimeout(function () { li.classList.remove("is-new"); }, 1000);
+        var pawn = document.createElement("div");
+        pawn.className = "pawn is-in"; pawn.innerHTML = '<img src="' + IMG(p.avatar) + '" alt="">';
+        pawnsEl.appendChild(pawn);
+        view[p.id] = { el: pawn, score: p.total_score, ms: p.total_ms, shown: Math.min(1, p.total_score / (TOTAL * 100)), lane: 0, laneCount: 1 };
+        placeAll(false);
+      });
+      Object.keys(view).forEach(function (id) {               // nuova partita: via le pedine vecchie
+        if (seen[id]) return;
+        view[id].el.remove(); delete view[id];
+      });
       $("[data-count]").textContent = players.length;
-      var ready = players.length >= 2;
-      bar.classList.toggle("is-waiting", !ready && phase === "lobby");
-      if (phase !== "lobby") return;
-      statusEl.textContent = players.length === MAX ? "Tutti dentro. Dai il via."
-        : ready ? players.length + " pronti · in attesa di altri giocatori…" : "In attesa di altri giocatori…";
+    }
+
+    function resetChars() {
+      Array.prototype.forEach.call(charsEl.children, function (li) {
+        li.classList.remove("is-taken", "is-answered", "is-new");
+        li.querySelector("[data-who]").textContent = "";
+        li.querySelector("img").alt = "";
+      });
+    }
+
+    /* ---------- Lobby ---------- */
+    function lobby() {
+      setPhase("lobby"); showView("chars");
+      head("Sei dei nostri?", "Scegli il tuo personaggio", "Scansiona il QR code e unisciti alla gara");
+      go.hidden = false;
+      updateLobby();
+    }
+    function updateLobby() {
+      var ready = players.length >= 1;
+      bar.classList.toggle("is-waiting", !ready);
+      status(players.length === MAX ? "Tutti dentro. Dai il via." :
+             ready ? players.length + (players.length === 1 ? " giocatore" : " giocatori") + " · in attesa di altri…" : "In attesa di giocatori…", players.length < MAX);
     }
 
     /* ---------- Pedine sulla strada ---------- */
@@ -272,111 +383,246 @@
       var back = row * 18;                                  // file successive un po' indietro
       return { x: p.x + nx * off - (dx / len) * back, y: p.y + ny * off - (dy / len) * back };
     }
-
     function toScreen(pt) {
       var m = svg.getScreenCTM(), r = roadEl.getBoundingClientRect();
       return { x: m.a * pt.x + m.e - r.left, y: m.d * pt.y + m.f - r.top };
     }
-
-    function placeAll(animate) {
-      var groups = {};
-      players.forEach(function (p) { var k = Math.round(p.score / 40); (groups[k] = groups[k] || []).push(p); });   // pedine vicine si affiancano
+    /* Tutte le pedine insieme verso il punteggio mostrato (1000 punti = traguardo) */
+    function placeAll(animate, dur) {
+      var groups = {}, ids = Object.keys(view);
+      ids.forEach(function (id) { var v = view[id], k = Math.round(v.score / 40); (groups[k] = groups[k] || []).push(v); });
       var scale = svg.getScreenCTM().a;
       document.documentElement.style.setProperty("--pawn-h", Math.round(Math.max(30, Math.min(60, 46 * scale))) + "px");
       Object.keys(groups).forEach(function (k) {
-        var g = groups[k].sort(function (a, b) { return a.time - b.time; });
-        g.forEach(function (p, i) { p.lane = i; p.laneCount = g.length; });
+        groups[k].sort(function (a, b) { return a.ms - b.ms; }).forEach(function (v, i, g) { v.lane = i; v.laneCount = g.length; });
       });
-      players.forEach(function (p) {
-        var target = Math.min(1, p.score / (ROUNDS * 100));      // 1000 punti = traguardo
-        if (!animate || REDUCED) { p.shown = target; draw(p); return; }
-        var from = p.shown, t0 = performance.now(), dur = 1100;
+      return new Promise(function (done) {
+        var t0 = performance.now(), d = dur || 1100, from = {};
+        ids.forEach(function (id) { from[id] = view[id].shown; });
         (function step(now) {
-          var t = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - t, 3);
-          p.shown = from + (target - from) * e; draw(p);
-          if (t < 1) requestAnimationFrame(step);
+          var t = !animate || REDUCED ? 1 : Math.min(1, (now - t0) / d), e = t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+          ids.forEach(function (id) {
+            var v = view[id]; if (!v) return;
+            var target = Math.min(1, v.score / (TOTAL * 100));
+            v.shown = from[id] + (target - from[id]) * e; draw(v);
+          });
+          if (t < 1) requestAnimationFrame(step); else done();
         })(t0);
       });
     }
-    function draw(p) {
-      var s = toScreen(pointAt(p.shown, p.lane || 0, p.laneCount || 1));
-      p.el.style.transform = "translate(" + s.x + "px," + s.y + "px) translate(-50%, -88%)";
-      p.el.style.zIndex = Math.round(s.y);
+    function draw(v) {
+      var s = toScreen(pointAt(v.shown, v.lane || 0, v.laneCount || 1));
+      v.el.style.transform = "translate(" + s.x + "px," + s.y + "px) translate(-50%, -88%)";
+      v.el.style.zIndex = Math.round(s.y);
     }
-    var REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    /* I punteggi passano alle pedine e alla classifica solo qui, dopo il reveal */
+    function takeScores() {
+      players.forEach(function (p) { var v = view[p.id]; if (v) { v.score = p.total_score; v.ms = p.total_ms; } });
+    }
 
     /* ---------- Classifica ---------- */
-    function ranking() {
-      return players.slice().sort(function (a, b) { return b.score - a.score || a.time - b.time; });
-    }
     function renderBoard() {
-      $("[data-round]").textContent = round;
-      var list = ranking().slice(0, 5);
-      $("[data-board-empty]").hidden = round > 0;
-      $("[data-board]").innerHTML = round === 0 ? "" : list.map(function (p, i) {
-        return '<li><span class="n">' + (i + 1) + '</span><img src="' + IMG(p.char) + '" alt=""><span class="who">' + p.name +
-          ' <span class="muted">· ' + CHARS[p.char] + '</span></span><span class="pts">' + p.score + " pt</span></li>";
+      setText("[data-round]", boardRound);
+      $("[data-board-empty]").hidden = boardRound > 0;
+      var list = NET.rank(players).slice(0, 5);
+      $("[data-board]").innerHTML = boardRound === 0 ? "" : list.map(function (p, i) {
+        return '<li><span class="n">' + (i + 1) + '</span><img src="' + IMG(p.avatar) + '" alt=""><span class="who">' + esc(p.nickname) +
+          ' <span class="muted">· ' + CHARS[p.avatar] + '</span></span><span class="pts">' + p.total_score + " pt</span></li>";
       }).join("");
     }
+    function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
 
-    /* ---------- Gara simulata ---------- */
-    function countdown(done) {
-      var o = document.createElement("div"); o.className = "overlay"; document.body.appendChild(o);
-      var seq = ["3", "2", "1", "Via!"], i = 0;
-      (function step() {
-        if (i === seq.length) { o.remove(); done(); return; }
-        o.innerHTML = '<span class="overlay__n' + (i === 3 ? " overlay__n--via" : "") + '">' + seq[i++] + "</span>";
-        later(step, 850);
-      })();
+    /* ---------- Giocatori simulati ---------- */
+    function addBots() {
+      var names = DEMO_NAMES.slice(0, BOTS), d = 400;
+      names.forEach(function (n) {
+        d += 600 + Math.random() * 1100;
+        setTimeout(function () {
+          if (phase !== "lobby" || players.length >= MAX) return;
+          var taken = players.map(function (p) { return p.avatar; });
+          var free = CHARS.map(function (_, i) { return i; }).filter(function (i) { return taken.indexOf(i) < 0; });
+          if (!free.length) return;
+          NET.join(gameId, n, free[Math.floor(Math.random() * free.length)]).then(function (r) {
+            bots.push({ id: r.playerId, secret: r.secret, skill: 0.35 + Math.random() * 0.5 });
+          }).catch(function () {});
+        }, d);
+      });
+    }
+    function botsAnswer(n) {
+      var correct = ROUNDS[n - 1].correct;
+      bots.forEach(function (b) {
+        var ms = Math.min(game.round_ms - 300, 700 + Math.random() * 8000 * (1.15 - b.skill));
+        if (Math.random() < 0.06) return;                 // ogni tanto qualcuno non risponde
+        var ok = Math.random() < b.skill, choice = ok ? correct : (correct + 1 + Math.floor(Math.random() * 2)) % 3;
+        setTimeout(function () { NET.answer(b.id, b.secret, n, choice).catch(function () {}); }, ms);
+      });
     }
 
-    function startRace() {
-      phase = "race";
-      bar.classList.remove("is-waiting");
-      go.hidden = true;
-      $("[data-lobby-eyebrow]").textContent = "In gara";
-      $("[data-lobby-title]").textContent = "Si corre.";
-      $("[data-lobby-sub]").textContent = "Più rispondi in fretta, più la pedina corre";
-      countdown(nextRound);
+    /* ---------- La partita ---------- */
+    function host(state, round, correct) {
+      return NET.host(gameId, state, round, correct).then(function (g) { game = g; return g; });
     }
 
-    function nextRound() {
-      if (round >= ROUNDS) { finish(); return; }
-      round++;
-      statusEl.textContent = "Round " + round + " di " + ROUNDS + " · dettaglio in messa a fuoco…";
-      later(function () {
-        players.forEach(function (p) {
-          var sec = Math.min(7.95, 0.8 + Math.random() * 7.5 * (1.15 - p.skill));
-          var ok = Math.random() < p.skill;
-          p.score += window.ZR_POINTS(sec, ok);
-          if (ok) { p.right++; p.time += sec; }
+    function answeredCount(n) { return players.filter(function (p) { return p.answered_round >= n; }).length; }
+    function updateAnswered() {
+      var n = game.round;
+      players.forEach(function (p) {
+        charsEl.querySelector('[data-char="' + p.avatar + '"]').classList.toggle("is-answered", p.answered_round >= n);
+      });
+      status('<span class="bar__count">' + answeredCount(n) + "/" + players.length + "</span> hanno risposto", answeredCount(n) < players.length);
+    }
+
+    function countdownView(n) {
+      setPhase("countdown"); showView("countdown");
+      head("Round " + n + " / " + TOTAL, "Pronti?", "Occhi sul telefono");
+      status("Round " + n + " di " + TOTAL, false);
+      var el = $("[data-cd]"), k = 3;
+      return new Promise(function (done) {
+        (function step() {
+          if (k === 0) { done(); return; }
+          el.textContent = k--; el.classList.remove("is-pop"); void el.offsetWidth; if (!REDUCED) el.classList.add("is-pop");
+          setTimeout(step, 1000);
+        })();
+      });
+    }
+
+    function playRound(n) {
+      running = true;
+      return host("countdown", n).then(function () { return countdownView(n); })
+        .then(function () { return host("round", n); })
+        .then(function (g) {
+          setPhase("round"); showView("chars");
+          head("Round " + n + " / " + TOTAL, "Chi lo riconoscerà per primo?", "Rispondete dal telefono");
+          Array.prototype.forEach.call(charsEl.children, function (li) { li.classList.remove("is-answered"); });
+          updateAnswered();
+          botsAnswer(n);
+          return new Promise(function (done) {        // si chiude quando hanno risposto tutti o allo scadere
+            (function check() {
+              var all = players.length > 0 && answeredCount(n) >= players.length;
+              if (all || NET.now() >= g.ends_ms + T.grace) { setTimeout(done, all ? 500 : 0); return; }
+              setTimeout(check, 150);
+            })();
+          });
+        })
+        .then(function () { return host("reveal", n, ROUNDS[n - 1].correct); })
+        .then(function () { return reveal(n); })
+        .then(function () {
+          if (n === TOTAL) return finalRace();
+          return race(n).then(function () { return standings(n); }).then(function () { return playRound(n + 1); });
         });
-        placeAll(true); renderBoard();
-        statusEl.textContent = "Round " + round + " di " + ROUNDS + " · risposte arrivate";
-        later(nextRound, ROUND_MS * 0.45);
-      }, ROUND_MS * 0.55);
     }
 
-    function finish() {
-      phase = "end";
-      $("[data-spinner]").hidden = true;
-      statusEl.textContent = "Gara finita";
-      var w = ranking()[0];
-      var o = document.createElement("div"); o.className = "overlay";
-      o.innerHTML = '<div class="win"><p class="t-meta accent">Vince la gara</p><img src="' + IMG(w.char) + '" alt="">' +
-        '<p class="t-display">' + w.name + '</p><p class="t-meta muted">' + CHARS[w.char] + " · " + w.score + " punti · " + w.right + " brand su " + ROUNDS + "</p>" +
-        '<button type="button" class="btn btn--primary" data-again>Ricomincia la demo <svg aria-hidden="true"><use href="#i-arrow"/></svg></button></div>';
+    function reveal(n) {
+      var r = ROUNDS[n - 1], fig = $("[data-reveal]"), im = $("[data-reveal-img]");
+      setPhase("reveal");
+      Array.prototype.forEach.call(charsEl.children, function (li) { li.classList.remove("is-answered"); });
+      head("Round " + n + " / " + TOTAL, "Ecco il brand", "");
+      status("Risposta", false);
+      im.style.transition = "none";
+      fig.style.setProperty("--focus", r.focus); fig.style.setProperty("--zoom", r.zoom); fig.style.setProperty("--blur", "6px");
+      im.src = r.image; im.alt = r.alt || "";
+      setText("[data-reveal-brand]", r.options[r.correct]);
+      showView("reveal");
+      void im.offsetWidth; im.style.transition = "";
+      requestAnimationFrame(function () { fig.style.setProperty("--zoom", 1); fig.style.setProperty("--blur", "0px"); });
+      return wait(T.reveal);
+    }
+
+    function race(n) {
+      setPhase("race");
+      head("Round " + n + " / " + TOTAL, "Si corre!", "Più veloci, più strada");
+      status("La corsa", false);
+      takeScores();
+      return Promise.all([placeAll(true, T.race), wait(T.race + 200)]);
+    }
+
+    function standings(n) {
+      setPhase("standings");
+      boardRound = n; renderBoard();
+      head("Round " + n + " / " + TOTAL, "Classifica", "");
+      status("Prossimo round tra poco", true);
+      var top = NET.rank(players).slice(0, 5);
+      $("[data-standings]").innerHTML = top.map(function (p, i) {
+        return '<li style="animation-delay:' + (i * 90) + 'ms"><span class="pos">' + (i + 1) + '</span><img src="' + IMG(p.avatar) + '" alt="">' +
+          '<span class="who">' + esc(p.nickname) + '</span><span class="gain">' + (p.last_score ? "+" + p.last_score : "+0") + '</span><span class="tot">' + p.total_score + "</span></li>";
+      }).join("");
+      showView("standings");
+      return wait(T.standings);
+    }
+
+    function finalRace() {
+      return host("final", TOTAL).then(function () {
+        setPhase("final"); showView("chars");
+        head("Round " + TOTAL + " / " + TOTAL, "Corsa finale", "Si va al traguardo");
+        status("Corsa finale", false);
+        takeScores();
+        return Promise.all([placeAll(true, T.final), wait(T.final + 300)]);
+      }).then(function () { return host("podium", TOTAL); }).then(podium);
+    }
+
+    function podium() {
+      setPhase("podium"); running = false;
+      boardRound = TOTAL; takeScores(); placeAll(false); renderBoard();
+      head("Gara finita", "Zoom Race", "");
+      status("Gara finita", false);
+      var r = NET.rank(players), order = [1, 0, 2];
+      var o = document.createElement("div"); o.className = "overlay"; o.setAttribute("data-podium", "");
+      o.innerHTML = '<div class="podium"><p class="t-meta accent">Podio</p><div class="podium__steps">' + order.map(function (k) {
+        var p = r[k];
+        if (!p) return '<div class="step step--empty"></div>';
+        return '<div class="step step--' + (k + 1) + '"><img src="' + IMG(p.avatar) + '" alt="" style="animation-delay:' + (k === 0 ? 900 : k === 1 ? 500 : 200) + 'ms">' +
+          '<span class="step__name">' + esc(p.nickname) + '</span><span class="step__pts">' + p.total_score + ' pt · ' + p.correct_count + '/' + TOTAL + '</span>' +
+          '<div class="step__block">' + (k + 1) + '</div></div>';
+      }).join("") + '</div><h2 class="podium__title">Zoom Race <em>finished.</em></h2>' +
+        '<button type="button" class="btn btn--primary" data-again>Nuova partita <svg aria-hidden="true"><use href="#i-arrow"/></svg></button></div>';
       document.body.appendChild(o);
-      o.querySelector("[data-again]").addEventListener("click", function () { location.reload(); });
+      o.querySelector("[data-again]").addEventListener("click", function () { o.remove(); newGame(); });
     }
 
-    go.addEventListener("click", function () { if (phase === "lobby" && players.length >= 2) startRace(); });
+    go.addEventListener("click", function () {
+      if (phase !== "lobby" || players.length < 1 || running) return;
+      go.hidden = true;
+      playRound(1).catch(fail);
+    });
+    function fail(e) {
+      running = false;
+      status("Problema di connessione. Ricarica la pagina per riprendere.", false);
+      console.error(e);
+    }
     window.addEventListener("resize", function () { placeAll(false); });
+    if ("ResizeObserver" in window) new ResizeObserver(function () { if (phase !== "race" && phase !== "final") placeAll(false); }).observe(roadEl);
 
-    /* Ingressi di prova */
-    var d = 0;
-    DEMO_NAMES.forEach(function (n, i) { d += 700 + Math.random() * 1300; later(function () { if (phase === "lobby") join(n); }, d + 600); });
-    updateLobby(); renderBoard();
+    /* ---------- Avvio ---------- */
+    function attach(id) {
+      if (unwatch) unwatch();
+      gameId = id; players = []; bots = []; boardRound = 0;
+      Object.keys(view).forEach(function (k) { view[k].el.remove(); delete view[k]; });
+      resetChars(); renderBoard();
+      unwatch = NET.watch(id, onSnap);
+    }
+    function newGame() {
+      status("Apro la gara…", true);
+      return NET.createGame().then(function (id) { attach(id); lobby(); if (BOTS) addBots(); });
+    }
+    /* Se la regia si ricarica a partita in corso, riprende dal punto in cui era */
+    function resume(g) {
+      attach(g.id);
+      return wait(1200).then(function () {
+        takeScores(); placeAll(false);
+        boardRound = g.state === "lobby" ? 0 : Math.max(0, g.round - (g.state === "reveal" ? 0 : 1)); renderBoard();
+        if (g.state === "lobby") { lobby(); return; }
+        go.hidden = true;
+        if (g.state === "countdown" || g.state === "round") return playRound(g.round);
+        if (g.state === "reveal") return g.round >= TOTAL ? finalRace() : standings(g.round).then(function () { return playRound(g.round + 1); });
+        if (g.state === "final") return host("podium", TOTAL).then(podium);
+        if (g.state === "podium") podium();
+      });
+    }
+
+    NET.ready().then(function () { return NET.resumeHost(); })
+      .then(function (g) { return g ? resume(g) : newGame(); })
+      .catch(fail);
+    renderBoard();
   })();
   </script>
 </body>

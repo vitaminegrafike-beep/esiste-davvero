@@ -22,16 +22,14 @@ window.ZR_ROUNDS = [
   { id: "birkenstock", image: "assets/rounds/birkenstock.jpg",   options: ["Hermès", "Timberland", "Birkenstock"],        correct: 2, focus: "50% 52%",  zoom: 1.1, alt: "Sandalo in pelle marrone con due fibbie metalliche." }
 ];
 
-/* Durata del round e sfocatura nel tempo (px), distribuita in modo uniforme sugli 8 secondi */
-window.ZR_ROUND_MS = 8000;
-window.ZR_BLUR_STEPS = [45, 34, 25, 18, 12, 7, 3, 2];
+/* Durata del round e sfocatura nel tempo (px): un passo ogni 1,5 s, interpolato in modo continuo sui 9 secondi */
+window.ZR_ROUND_MS = 9000;
+window.ZR_BLUR_STEPS = [45, 34, 25, 17, 10, 5, 2];
 
-/* Punti per una risposta esatta in base al tempo (secondi). Errata o nessuna risposta: 0. */
-window.ZR_POINTS = function (seconds, correct) {
+/* Punti per una risposta esatta, continui in base al tempo (millisecondi): da 100 a 30.
+   Errata o nessuna risposta: 0. Lo stesso calcolo è nel database (supabase/schema.sql), che fa fede. */
+window.ZR_POINTS = function (ms, correct) {
   if (!correct) return 0;
-  if (seconds < 2) return 100;
-  if (seconds < 4) return 80;
-  if (seconds < 6) return 60;
-  if (seconds < 7) return 40;
-  return 20;
+  var t = Math.max(0, Math.min(window.ZR_ROUND_MS, ms));
+  return Math.round(100 - (t / window.ZR_ROUND_MS) * 70);
 };

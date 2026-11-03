@@ -11,48 +11,61 @@
   <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/style.css">
   <style>
-    /* Zoom Race da telefono: 10 round, stessa grafica di "Esiste davvero?". */
+    /* Zoom Race da telefono: il telefono è il controller, lo spettacolo è sullo schermo grande. */
     .round__top { justify-content: space-between; }
-    .round__top .t-meta + .t-meta { margin-left: auto; color: var(--text); font-variant-numeric: tabular-nums; }
+    .round__top .t-meta + .t-meta { margin-left: auto; color: var(--text); max-width: 50%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .screen--splash .t-display { text-transform: uppercase; }
-    .end { display: flex; flex-direction: column; gap: var(--s4); padding: var(--s8) var(--gutter) var(--s6); flex: 1; }
-    .end .t-score { margin: var(--s2) 0; }
-    .recap { list-style: none; margin: var(--s2) 0 0; padding: 0; border-top: 1px solid var(--border); }
-    .recap li { display: grid; grid-template-columns: 28px 1fr auto; gap: var(--s3); align-items: center; min-height: 40px; border-bottom: 1px solid var(--border); font-size: 15px; }
-    .recap .n { color: var(--text-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
-    .recap .pts { font-variant-numeric: tabular-nums; }
-    .recap .pts.is-zero { color: var(--text-muted); }
-    .dt { display: flex; flex-direction: column; height: 100svh; max-width: 430px; margin: 0 auto; padding-top: env(safe-area-inset-top); }
+    .dt { display: flex; flex-direction: column; min-height: 100svh; max-width: 430px; margin: 0 auto; padding-top: env(safe-area-inset-top); }
+    .dt[data-screen="play"] { height: 100svh; }
+
+    /* ---------- Ingresso: nome e personaggio ---------- */
+    .join { display: flex; flex-direction: column; gap: var(--s3); padding: var(--s8) var(--gutter) var(--s4); flex: 1; }
+    .join .field { margin-top: var(--s2); }
+    .pick { list-style: none; margin: var(--s2) 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s2); }
+    .pick button {
+      width: 100%; display: grid; justify-items: center; gap: 2px; padding: 6px 2px 8px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px; color: var(--text);
+      font: 500 10px/1.2 var(--sans); letter-spacing: .14em; text-transform: uppercase; cursor: pointer;
+      transition: border-color var(--dur-press) var(--ease), opacity var(--dur-base) var(--ease), transform var(--dur-press) var(--ease);
+    }
+    .pick button:active { transform: scale(.97); }
+    .pick img { width: 100%; aspect-ratio: 2 / 3; object-fit: contain; object-position: center bottom; }
+    .pick button[aria-pressed="true"] { border: 2px solid var(--text); padding: 5px 1px 7px; background: var(--surface-2); }
+    .pick button:disabled { opacity: .3; cursor: default; transform: none; }
+    .pick button:disabled img { filter: grayscale(1); }
+    .pick .who { color: var(--text-muted); letter-spacing: .04em; text-transform: none; font-size: 10px; height: 1.2em; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .join__error { color: var(--wrong); font-size: 14px; min-height: 1.45em; }
+    .dt[data-screen="join"] .actions { position: sticky; background: linear-gradient(to bottom, rgba(8, 11, 11, 0) 0, var(--bg) var(--s4)); }
+
+    /* ---------- Messaggi: attesa, guarda lo schermo, risultato finale ---------- */
+    .msg { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: var(--s3); padding: var(--s8) var(--gutter); text-align: center; }
+    .msg__fig { width: 46%; max-width: 180px; aspect-ratio: 2 / 3; object-fit: contain; object-position: center bottom; filter: drop-shadow(0 14px 22px rgba(0,0,0,.55)); margin-bottom: var(--s2); }
+    .msg .t-h1 { max-width: 16ch; }
+    .msg .t-score { margin: var(--s1) 0; }
+    .msg .t-body { max-width: 30ch; }
+    .msg .btn { width: auto; margin-top: var(--s4); }
+    .msg .spinner { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border); border-top-color: var(--text); animation: spin 1s linear infinite; margin-top: var(--s2); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---------- Round ---------- */
     .dt .media { flex: 1 1 auto; min-height: 180px; height: auto; max-height: min(125vw, 537px); }
     .dt .media img {
       opacity: 1; object-position: var(--focus, 50% 50%); transform-origin: var(--focus, 50% 50%);
       transform: scale(var(--zoom, 1)); filter: blur(var(--blur, 45px));
-      will-change: filter, transform;
+      will-change: filter, transform; transition: opacity var(--dur-base) var(--ease);
     }
     .dt .media img.is-hidden { opacity: 0; }
-    .dt .media.is-revealed img { transition: transform 900ms var(--ease), filter 500ms var(--ease); }
-
-    /* Timer: numero in alto a destra + barra che si consuma sotto l'immagine */
-    .timer {
-      position: absolute; top: var(--s4); right: var(--gutter); z-index: 1;
-      min-width: 64px; padding: 10px var(--s3); border-radius: var(--r-pill);
-      background: rgba(8, 11, 11, 0.72); border: 1px solid var(--border-strong);
-      font: 600 15px/1 var(--sans); font-variant-numeric: tabular-nums; text-align: center; letter-spacing: 0.02em;
-    }
-    .timer.is-low { border-color: var(--wrong); color: var(--wrong); }
+    .dt[data-locked] .media img { opacity: .45; }
+    /* Barra sottile che si consuma: nessun numero sul telefono */
     .timebar { height: 3px; background: var(--border); }
     .timebar span { display: block; height: 100%; width: 100%; background: var(--text); transform-origin: left center; transform: scaleX(var(--left, 1)); }
-    .timebar.is-low span { background: var(--wrong); }
+    .dt[data-locked] .timebar span { opacity: 0; }
 
-    /* Conto alla rovescia iniziale */
-    .countdown {
-      position: absolute; inset: 0; z-index: 2; display: grid; place-items: center; text-align: center;
-      background: rgba(8, 11, 11, 0.35);
-    }
+    /* Conto alla rovescia prima di ogni round */
+    .countdown { position: absolute; inset: 0; z-index: 2; display: grid; place-items: center; text-align: center; background: rgba(8, 11, 11, 0.35); }
     .countdown__n { font-family: var(--serif); font-size: 96px; line-height: 1; }
     .countdown__n.is-pop { animation: pop 900ms var(--ease) both; }
     @keyframes pop { from { opacity: 0; transform: scale(1.4); } 30% { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.92); } }
-    .countdown .btn { width: auto; }
 
     .dt .round__body { flex: 0 0 auto; padding-top: var(--s4); padding-bottom: var(--s3); }
     .dt .prompt { color: var(--text-muted); }
@@ -71,39 +84,26 @@
       flex: none; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center;
       border: 1px solid var(--border-strong); font: 600 13px/1 var(--sans); letter-spacing: 0.04em;
     }
-    .opt__icon { margin-left: auto; width: 18px; height: 18px; display: none; }
     .opt[aria-disabled="true"] { cursor: default; transform: none; }
-    .opt.is-dim { opacity: 0.35; }
-    .opt.is-right { border-color: var(--correct); background: rgba(151, 197, 158, 0.16); }
-    .opt.is-right .opt__key { background: var(--correct); color: var(--bg); border-color: var(--correct); }
-    .opt.is-wrong { border-color: var(--wrong); background: rgba(199, 142, 120, 0.16); }
-    .opt.is-wrong .opt__key { background: var(--wrong); color: var(--bg); border-color: var(--wrong); }
-    .opt.is-right .opt__icon, .opt.is-wrong .opt__icon { display: block; }
+    .dt[data-phase="countdown"] .opt { opacity: .5; }
 
-    /* Esito */
-    .result-line { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s3); }
-    .points { font-family: var(--serif); font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums lining-nums; }
-    .points.is-zero { color: var(--text-muted); }
+    /* Dopo il tocco: risposta registrata, senza dire se è giusta */
+    .locked { display: grid; justify-items: center; gap: var(--s2); text-align: center; padding: var(--s4) 0 var(--s2); animation: reveal-in var(--dur-reveal) var(--ease) both; }
+    .locked .t-h1 { font-size: clamp(28px, 8.4vw, 34px); }
+    .locked__note { color: var(--wrong); font-size: 14px; min-height: 1.45em; text-align: center; }
     .dt .actions { position: static; background: none; padding-top: var(--s3); }
-    .dt [data-phase="play"] .actions-next { display: none; }
-
-    .proto-note { text-align: center; margin-top: var(--s2); }
-    /* Dopo la risposta: via timer e nota, così testo e pulsante entrano anche su schermi bassi */
-    .dt[data-phase="result"] .timer, .dt[data-phase="result"] .proto-note { display: none; }
-    @media (max-height: 700px) { .dt[data-phase="result"] [data-result-text] { font-size: 15px; } .dt[data-phase="result"] .opt { min-height: 44px; } }
-    @media (max-height: 640px) { .opt { min-height: 46px; } .opt__key { width: 32px; height: 32px; } .points { font-size: 32px; } }
-    @media (prefers-reduced-motion: reduce) { .countdown__n.is-pop { animation: none; } }
+    @media (max-height: 640px) { .opt { min-height: 46px; } .opt__key { width: 32px; height: 32px; } }
+    @media (prefers-reduced-motion: reduce) { .countdown__n.is-pop { animation: none; } .msg .spinner { animation-duration: 3s; } }
   </style>
 </head>
 <body>
   <svg width="0" height="0" class="sprite" aria-hidden="true" focusable="false">
     <symbol id="i-logo" viewBox="0 0 40 24"><circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width="1.25"/><circle cx="28" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width="1.25"/></symbol>
-    <symbol id="i-tick" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-    <symbol id="i-miss" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8.5 12h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
     <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   </svg>
 
-  <section class="screen screen--splash" data-splash style="max-width: 430px; margin: 0 auto;">
+  <!-- Splash -->
+  <section class="screen screen--splash" data-screen="splash" style="max-width: 430px; margin: 0 auto;">
     <div class="splash__bg" aria-hidden="true"></div>
     <div class="screen__body">
       <svg class="logo" aria-hidden="true"><use href="#i-logo"/></svg>
@@ -111,202 +111,359 @@
         <p class="t-meta accent splash__eyebrow">Un piccolo gioco per grandi osservatori</p>
         <h1 class="t-display">Zoom<br><em>Race</em></h1>
         <p class="t-lead">Quanto ci metti a riconoscere i grandi brand?</p>
-        <p class="t-body muted">10 dettagli, 3 risposte, 8 secondi ciascuno. La foto si mette a fuoco piano piano: più rispondi presto, più punti fai.</p>
+        <p class="t-body muted">10 dettagli, 3 risposte, 9 secondi ciascuno. La foto si mette a fuoco piano piano: più rispondi presto, più la tua pedina corre sullo schermo grande.</p>
       </div>
     </div>
     <div class="actions">
-      <button type="button" class="btn btn--primary" data-go>Inizia <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+      <button type="button" class="btn btn--primary" data-enter>Entra in gara <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
       <p class="t-meta muted splash__footer">Dettagli. Istinto. Velocità.</p>
     </div>
   </section>
 
-  <main class="dt" data-root data-phase="ready" hidden>
+  <!-- Ingresso: nome e personaggio -->
+  <section class="dt" data-screen="join" hidden>
+    <form class="join" data-join-form novalidate>
+      <p class="t-meta accent">Entra in gara</p>
+      <h2 class="t-h1">Scegli il tuo personaggio</h2>
+      <div class="field">
+        <label class="field__label" for="nick">Il tuo nome</label>
+        <input class="field__input" id="nick" name="nick" maxlength="16" autocomplete="nickname" autocapitalize="words" placeholder="Come ti chiamano in call" enterkeyhint="done">
+      </div>
+      <ul class="pick" data-pick role="list"></ul>
+      <p class="join__error" data-join-error aria-live="polite"></p>
+    </form>
+    <div class="actions">
+      <button type="button" class="btn btn--primary" data-join aria-disabled="true">Entra <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+    </div>
+  </section>
+
+  <!-- Messaggi -->
+  <section class="dt" data-screen="msg" hidden>
+    <div class="msg" aria-live="polite">
+      <img class="msg__fig" data-msg-fig alt="" hidden>
+      <p class="t-meta accent" data-msg-eyebrow></p>
+      <p class="t-score" data-msg-big hidden></p>
+      <h2 class="t-h1" data-msg-title></h2>
+      <p class="t-body muted" data-msg-text></p>
+      <span class="spinner" data-msg-spinner aria-hidden="true" hidden></span>
+      <button type="button" class="btn btn--primary" data-msg-btn hidden></button>
+    </div>
+  </section>
+
+  <!-- Round -->
+  <main class="dt" data-screen="play" data-phase="countdown" hidden>
     <header class="round__header">
-      <div class="round__top"><span class="home" aria-hidden="true"><svg class="logo"><use href="#i-logo"/></svg></span><p class="t-meta" data-counter>Round 1 di 10</p><p class="t-meta" data-total>0 pt</p></div>
+      <div class="round__top"><span class="home" aria-hidden="true"><svg class="logo"><use href="#i-logo"/></svg></span><p class="t-meta" data-counter>Round 1 di 10</p><p class="t-meta" data-me></p></div>
       <div class="progress"><span class="progress__fill" data-progress style="width:10%"></span></div>
     </header>
 
     <figure class="media" data-media>
-      <img data-img src="" alt="" draggable="false">
-      <span class="timer" data-timer aria-hidden="true">8,0</span>
-      <div class="countdown" data-countdown>
-        <button type="button" class="btn btn--primary" data-start>Sono pronto</button>
-      </div>
+      <img data-img src="" alt="" draggable="false" class="is-hidden">
+      <div class="countdown" data-countdown><span class="countdown__n">3</span></div>
     </figure>
-    <div class="timebar" data-timebar aria-hidden="true"><span></span></div>
+    <div class="timebar" aria-hidden="true"><span data-timebar></span></div>
 
     <div class="screen__body round__body" aria-live="polite">
-      <div data-question>
-        <p class="t-meta prompt">Di che brand è questo dettaglio?</p>
-      </div>
-      <div data-result hidden>
-        <div class="result-line">
-          <p class="verdict t-meta" data-verdict><svg class="icon" aria-hidden="true"><use data-verdict-icon href="#i-tick"/></svg><span data-verdict-text></span></p>
-          <p class="points" data-points>+0</p>
-        </div>
-        <p class="t-body muted" data-result-text></p>
-      </div>
+      <p class="t-meta prompt">Di che brand è questo dettaglio?</p>
     </div>
 
     <div class="actions">
       <div class="options" data-options role="group" aria-label="Di che brand è questo dettaglio?">
-        <button type="button" class="opt" data-opt="0" aria-disabled="true"><span class="opt__key">A</span><span data-label>Omega</span><svg class="opt__icon" aria-hidden="true"><use href="#i-tick"/></svg></button>
-        <button type="button" class="opt" data-opt="1" aria-disabled="true"><span class="opt__key">B</span><span data-label>Rolex</span><svg class="opt__icon" aria-hidden="true"><use href="#i-tick"/></svg></button>
-        <button type="button" class="opt" data-opt="2" aria-disabled="true"><span class="opt__key">C</span><span data-label>Tudor</span><svg class="opt__icon" aria-hidden="true"><use href="#i-tick"/></svg></button>
+        <button type="button" class="opt" data-opt="0" aria-disabled="true"><span class="opt__key">A</span><span data-label></span></button>
+        <button type="button" class="opt" data-opt="1" aria-disabled="true"><span class="opt__key">B</span><span data-label></span></button>
+        <button type="button" class="opt" data-opt="2" aria-disabled="true"><span class="opt__key">C</span><span data-label></span></button>
       </div>
-      <button type="button" class="btn btn--primary" data-next hidden><span data-next-label>Prossimo round</span> <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
-      <p class="t-small muted proto-note">Prototipo · partita singola, senza regia collegata</p>
+      <div class="locked" data-locked-box hidden>
+        <p class="t-meta accent" data-locked-eyebrow>Risposta registrata</p>
+        <p class="t-h1">Guarda lo schermo 👀</p>
+      </div>
+      <p class="locked__note" data-note aria-live="polite"></p>
     </div>
   </main>
 
-  <section class="dt" data-end hidden>
-    <div class="end">
-      <p class="t-meta accent">Il tuo risultato</p>
-      <p class="t-score" data-end-score>0</p>
-      <p class="t-body muted" data-end-text></p>
-      <ol class="recap" data-recap></ol>
-    </div>
-    <div class="actions"><button type="button" class="btn btn--primary" data-replay>Rigioca <svg aria-hidden="true"><use href="#i-arrow"/></svg></button></div>
-  </section>
-
   <script src="js/rounds.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/net.js"></script>
   <script>
   (function () {
     "use strict";
-    var ROUNDS = window.ZR_ROUNDS, DURATION = window.ZR_ROUND_MS, STEPS = window.ZR_BLUR_STEPS, POINTS = window.ZR_POINTS;
-    var TOTAL = ROUNDS.length;
+    var ROUNDS = window.ZR_ROUNDS, STEPS = window.ZR_BLUR_STEPS, TOTAL = ROUNDS.length;
+    var NET = window.ZRNet;
+    var CHARS = ["Astro","Neko","Dino","Bot","Ducky","Bubu","Lapin","Panda","Pixel","Fungo","Ghost","Cool","Espresso","Cactus","Pingu","Luna"];
+    var IMG = function (i) { return "assets/personaggi/" + String(i + 1).padStart(2, "0") + "-" + CHARS[i].toLowerCase() + ".webp"; };
 
     var $ = function (s) { return document.querySelector(s); };
-    var root = $("[data-root]"), media = $("[data-media]"), img = $("[data-img]");
-    var timer = $("[data-timer]"), bar = $("[data-timebar]"), cd = $("[data-countdown]");
+    var screens = Array.prototype.slice.call(document.querySelectorAll("[data-screen]"));
+    var play = $('[data-screen="play"]'), media = $("[data-media]"), img = $("[data-img]"), cd = $("[data-countdown]");
     var opts = Array.prototype.slice.call(document.querySelectorAll("[data-opt]"));
     var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    var idx = 0, t0 = 0, raf = 0, done = true, results = [];
 
-    /* Precarica tutte le immagini */
+    var me = null;            // { gameId, playerId, secret }: salvato sul telefono per rientrare dopo una ricarica
+    var game = null, players = [], unwatch = null, searching = 0;
+    var picked = -1, joining = false;
+    var shownRound = 0, lockedRound = 0, sending = false, lastCd = 0, raf = 0;
+    var ready = NET.ready();
+
+    /* Precarica le immagini dei round */
     ROUNDS.forEach(function (r) { var i = new Image(); i.src = r.image; });
 
-    /* Sfocatura continua: interpola tra i passi distribuiti sugli 8 secondi, senza mai arrivare a 0 */
+    function show(name) {
+      screens.forEach(function (s) { s.hidden = s.getAttribute("data-screen") !== name; });
+    }
+
+    /* ---------- Messaggi ---------- */
+    function msg(o) {
+      show("msg");
+      var fig = $("[data-msg-fig]");
+      fig.hidden = o.avatar === undefined;
+      if (o.avatar !== undefined && fig.getAttribute("src") !== IMG(o.avatar)) fig.src = IMG(o.avatar);
+      $("[data-msg-eyebrow]").textContent = o.eyebrow || "";
+      var big = $("[data-msg-big]"); big.hidden = !o.big; big.textContent = o.big || "";
+      $("[data-msg-title]").textContent = o.title || "";
+      $("[data-msg-text]").textContent = o.text || "";
+      $("[data-msg-spinner]").hidden = !o.spinner;
+      var b = $("[data-msg-btn]"); b.hidden = !o.button; b.textContent = o.button || ""; b.onclick = o.onButton || null;
+    }
+
+    /* ---------- Trovare la gara ---------- */
+    function enter() {
+      clearTimeout(searching);
+      msg({ eyebrow: "Zoom Race", title: "Cerco la gara…", spinner: true });
+      ready.then(function () { return NET.openGame(); }).then(function (g) {
+        if (!g) { waitForGame(false); return; }
+        follow(g.id);
+      }).catch(function () { waitForGame(true); });
+    }
+    function waitForGame(offline) {
+      msg({ eyebrow: "Zoom Race", title: "Nessuna gara aperta",
+            text: offline && NET.mode === "local"
+              ? "Modalità prova: apri la regia (zoom-race.html) in un'altra scheda di questo browser."
+              : "Aspetta che la regia apra la partita. Riprovo da solo.",
+            spinner: true });
+      searching = setTimeout(enter, 3000);
+    }
+    function follow(gameId) {
+      if (unwatch) unwatch();
+      game = null;
+      unwatch = NET.watch(gameId, function (snap) { game = snap.game; players = snap.players; render(); });
+    }
+
+    /* ---------- Stato condiviso → schermata ---------- */
+    function mine() {
+      if (!me || !game || me.gameId !== game.id) return null;
+      return players.filter(function (p) { return p.id === me.playerId; })[0] || null;
+    }
+
+    function render() {
+      if (!game) return;
+      var p = mine();
+      if (game.state === "closed") {
+        if (me && me.gameId === game.id) { NET.store("player", null); me = null; }
+        msg({ eyebrow: "Zoom Race", title: "Partita chiusa", text: "La regia ha chiuso questa gara.",
+              button: "Cerca una nuova gara", onButton: enter });
+        return;
+      }
+      if (!p) {
+        if (me && me.gameId === game.id && game.state === "lobby") {   // appena entrato: la lista non mi ha ancora
+          msg({ eyebrow: "Sei dentro", title: "Un attimo…", spinner: true });
+          return;
+        }
+        if (game.state === "lobby") { renderJoin(); return; }
+        msg({ eyebrow: "Zoom Race", title: "Gara già partita", text: "Questa gara è già in corso: entrerai nella prossima.", spinner: true });
+        clearTimeout(searching); searching = setTimeout(enter, 5000);
+        return;
+      }
+      $("[data-me]").textContent = p.nickname;
+      var st = game.state;
+      if (st === "lobby") {
+        msg({ avatar: p.avatar, eyebrow: "Sei dentro", title: "Ciao " + p.nickname + ".",
+              text: "Guarda lo schermo grande: la gara parte quando la regia dà il via." });
+      } else if (st === "countdown" || st === "round") {
+        startPlay();
+      } else if (st === "reveal") {
+        msg({ avatar: p.avatar, eyebrow: "Round " + game.round + " di " + TOTAL, title: "Guarda lo schermo 👀",
+              text: "Risposta e corsa sono sullo schermo grande." });
+      } else if (st === "final") {
+        msg({ avatar: p.avatar, eyebrow: "Corsa finale", title: "Guarda lo schermo 👀", text: "Si va al traguardo." });
+      } else if (st === "podium") {
+        var pos = NET.rank(players).indexOf(p) + 1;
+        msg({ avatar: p.avatar, eyebrow: "Hai chiuso", big: pos + "°", title: p.total_score + " pt",
+              text: p.correct_count + " brand riconosciuti su " + TOTAL + " · " + players.length + (players.length === 1 ? " giocatore" : " giocatori") + "." });
+      }
+    }
+
+    /* ---------- Ingresso ---------- */
+    var nick = $("#nick"), joinBtn = $("[data-join]"), joinErr = $("[data-join-error]");
+    try { nick.value = localStorage.getItem("zr-nick") || ""; } catch (e) {}
+    $("[data-pick]").innerHTML = CHARS.map(function (c, i) {
+      return '<li><button type="button" data-avatar="' + i + '" aria-pressed="false"><img src="' + IMG(i) + '" alt="">' +
+        '<span>' + c + '</span><span class="who" data-who></span></button></li>';
+    }).join("");
+    var pickBtns = Array.prototype.slice.call(document.querySelectorAll("[data-avatar]"));
+
+    function renderJoin() {
+      var first = $('[data-screen="join"]').hidden;
+      show("join");
+      var taken = {};
+      players.forEach(function (p) { taken[p.avatar] = p.nickname; });
+      if (taken[picked] !== undefined) picked = -1;
+      pickBtns.forEach(function (b, i) {
+        var t = taken[i] !== undefined;
+        b.disabled = t;
+        b.setAttribute("aria-pressed", String(i === picked));
+        b.querySelector("[data-who]").textContent = t ? taken[i] : "";
+        b.setAttribute("aria-label", CHARS[i] + (t ? ", già scelto da " + taken[i] : ""));
+      });
+      if (players.length >= 16) joinErr.textContent = "Gara al completo: 16 giocatori su 16.";
+      updateJoinBtn();
+      if (first) window.scrollTo(0, 0);
+    }
+    function updateJoinBtn() {
+      joinBtn.setAttribute("aria-disabled", nick.value.trim() && picked >= 0 && !joining ? "false" : "true");
+    }
+    nick.addEventListener("input", function () { joinErr.textContent = ""; updateJoinBtn(); });
+    $("[data-pick]").addEventListener("click", function (e) {
+      var b = e.target.closest("[data-avatar]");
+      if (!b || b.disabled) return;
+      picked = +b.getAttribute("data-avatar");
+      pickBtns.forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      joinErr.textContent = "";
+      updateJoinBtn();
+    });
+    function doJoin(e) {
+      if (e) e.preventDefault();
+      var name = nick.value.trim();
+      if (!name) { joinErr.textContent = "Scrivi il tuo nome."; nick.focus(); return; }
+      if (picked < 0) { joinErr.textContent = "Scegli un personaggio."; return; }
+      if (joining || !game) return;
+      joining = true; updateJoinBtn();
+      try { localStorage.setItem("zr-nick", name); } catch (err) {}
+      var gid = game.id, av = picked;
+      NET.join(gid, name, av).then(function (r) {
+        me = { gameId: gid, playerId: r.playerId, secret: r.secret };
+        NET.store("player", me);
+        joining = false;
+        msg({ avatar: av, eyebrow: "Sei dentro", title: "Ciao " + name + ".",
+              text: "Guarda lo schermo grande: la gara parte quando la regia dà il via." });
+      }).catch(function (err) {
+        joining = false;
+        var c = NET.codeOf(err);
+        joinErr.textContent =
+          c === "taken" ? "Questo personaggio è appena stato preso: scegline un altro." :
+          c === "full" ? "Gara al completo: 16 giocatori su 16." :
+          c === "not_open" ? "La gara è appena partita: entrerai nella prossima." :
+          c === "name" ? "Scrivi il tuo nome." : "Connessione non riuscita. Riprova.";
+        if (c === "taken") picked = -1;
+        updateJoinBtn();
+      });
+    }
+    $("[data-join-form]").addEventListener("submit", doJoin);
+    joinBtn.addEventListener("click", doJoin);
+
+    /* ---------- Round ---------- */
+    /* Sfocatura continua: interpola tra i passi distribuiti sui 9 secondi, senza mai arrivare a 0 */
     function blurAt(p) {
       var x = Math.min(1, Math.max(0, p)) * (STEPS.length - 1), k = Math.floor(x), f = x - k;
       if (k >= STEPS.length - 1) return STEPS[STEPS.length - 1];
       return STEPS[k] + (STEPS[k + 1] - STEPS[k]) * f;
     }
-    function fmt(sec) { return sec.toFixed(1).replace(".", ","); }
-    function totalPts() { return results.reduce(function (a, r) { return a + r.points; }, 0); }
 
-    function setProgress(p) {
-      media.style.setProperty("--blur", blurAt(p).toFixed(2) + "px");
-      var left = Math.max(0, 1 - p);
-      bar.style.setProperty("--left", left.toFixed(4));
-      timer.textContent = fmt(left * DURATION / 1000);
-      var low = left < 0.25;
-      timer.classList.toggle("is-low", low); bar.classList.toggle("is-low", low);
+    function setLocked(label) {
+      if (label) {
+        play.setAttribute("data-locked", "");
+        $("[data-locked-eyebrow]").textContent = label;
+        $("[data-options]").hidden = true; $("[data-locked-box]").hidden = false;
+      } else {
+        play.removeAttribute("data-locked");
+        $("[data-options]").hidden = false; $("[data-locked-box]").hidden = true;
+      }
     }
 
-    function load(i) {
-      idx = i; done = false;
-      var r = ROUNDS[i];
-      cancelAnimationFrame(raf);
-      root.setAttribute("data-phase", "ready");
-      media.classList.remove("is-revealed");
+    function loadRound(n) {
+      var r = ROUNDS[n - 1];
+      shownRound = n; lastCd = 0;
       media.style.setProperty("--focus", r.focus);
       media.style.setProperty("--zoom", r.zoom);
-      img.src = r.image; img.alt = r.alt;
-      setProgress(0);
-      $("[data-counter]").textContent = "Round " + (i + 1) + " di " + TOTAL;
-      $("[data-progress]").style.width = ((i + 1) / TOTAL * 100) + "%";
-      $("[data-total]").textContent = totalPts() + " pt";
-      opts.forEach(function (o, k) {
-        o.className = "opt"; o.setAttribute("aria-disabled", "true");
-        o.querySelector("[data-label]").textContent = r.options[k];
-      });
-      $("[data-question]").hidden = false; $("[data-result]").hidden = true;
-      $("[data-options]").hidden = false; $("[data-next]").hidden = true;
+      media.style.setProperty("--blur", STEPS[0] + "px");
+      img.classList.add("is-hidden");
+      img.src = r.image;
+      $("[data-counter]").textContent = "Round " + n + " di " + TOTAL;
+      $("[data-progress]").style.width = (n / TOTAL * 100) + "%";
+      opts.forEach(function (o, k) { o.querySelector("[data-label]").textContent = r.options[k]; o.setAttribute("aria-disabled", "true"); });
+      $("[data-note]").textContent = "";
+      $("[data-timebar]").style.setProperty("--left", 1);
+      setLocked(null);
     }
 
-    function countdown(then) {
-      cd.hidden = false;
-      var n = 3;
-      (function step() {
-        if (n === 0) { cd.hidden = true; then(); return; }
-        cd.innerHTML = '<span class="countdown__n is-pop">' + n + "</span>";
-        n--; setTimeout(step, reduce ? 300 : 800);
-      })();
-    }
-
-    /* Le opzioni compaiono subito e la sfocatura parte nello stesso istante */
-    function start() {
-      cd.hidden = true;
-      root.setAttribute("data-phase", "play");
-      opts.forEach(function (o) { o.removeAttribute("aria-disabled"); });
-      t0 = performance.now();
-      (function tick(now) {
-        var p = Math.min(1, (now - t0) / DURATION);
-        setProgress(p);
-        if (p >= 1) { finish(null, DURATION); return; }
-        raf = requestAnimationFrame(tick);
-      })(t0);
-    }
-
-    function finish(choice, ms) {
-      if (done) return; done = true; cancelAnimationFrame(raf);
-      var r = ROUNDS[idx];
-      root.setAttribute("data-phase", "result");
-      var correct = choice === r.correct;
-      var pts = choice === null ? 0 : POINTS(ms / 1000, correct);
-      results[idx] = { choice: choice, ms: ms, correct: correct, points: pts };
-      if (navigator.vibrate) navigator.vibrate(correct ? 12 : [10, 40, 10]);
-
-      // Reveal: a fuoco e prodotto intero
-      media.classList.add("is-revealed");
-      media.style.setProperty("--blur", "0px"); media.style.setProperty("--zoom", 1);
-
-      opts.forEach(function (o, k) {
-        o.setAttribute("aria-disabled", "true");
-        if (k === r.correct) { o.classList.add("is-right"); o.querySelector("use").setAttribute("href", "#i-tick"); }
-        else if (k === choice) { o.classList.add("is-wrong"); o.querySelector("use").setAttribute("href", "#i-miss"); }
-        else o.classList.add("is-dim");
-      });
-
-      var brand = r.options[r.correct];
-      $("[data-verdict-icon]").setAttribute("href", correct ? "#i-tick" : "#i-miss");
-      $("[data-verdict-text]").textContent = choice === null ? "Tempo scaduto." : (correct ? "Esatto." : "Non proprio.");
-      var pe = $("[data-points]"); pe.textContent = "+" + pts; pe.classList.toggle("is-zero", !pts);
-      $("[data-result-text]").textContent = correct
-        ? "Era " + brand + ". Riconosciuto in " + fmt(ms / 1000) + " secondi."
-        : "Era " + brand + ".";
-      $("[data-total]").textContent = totalPts() + " pt";
-      $("[data-question]").hidden = true; $("[data-result]").hidden = false;
-      $("[data-next-label]").textContent = idx === TOTAL - 1 ? "Vedi il risultato" : "Prossimo round";
-      setTimeout(function () { $("[data-next]").hidden = false; }, reduce ? 0 : 600);
-    }
-
-    function showEnd() {
-      root.hidden = true; $("[data-end]").hidden = false; window.scrollTo(0, 0);
-      var tot = totalPts(), right = results.filter(function (r) { return r.correct; }).length;
-      $("[data-end-score]").textContent = tot + " pt";
-      $("[data-end-text]").textContent = right + " brand riconosciuti su " + TOTAL + ".";
-      $("[data-recap]").innerHTML = ROUNDS.map(function (r, i) {
-        var x = results[i];
-        return '<li><span class="n">' + String(i + 1).padStart(2, "0") + "</span><span>" + r.options[r.correct] +
-          '</span><span class="pts' + (x.points ? "" : " is-zero") + '">' + (x.points ? "+" + x.points : (x.choice === null ? "tempo scaduto" : "0")) + "</span></li>";
-      }).join("");
-    }
-
-    document.addEventListener("click", function (e) {
-      if (e.target.closest("[data-go]")) { $("[data-splash]").hidden = true; root.hidden = false; window.scrollTo(0, 0); load(0); return; }
-      if (e.target.closest("[data-start]")) { countdown(start); return; }
-      if (e.target.closest("[data-next]")) {
-        if (idx === TOTAL - 1) { showEnd(); return; }
-        load(idx + 1); start(); return;
+    function startPlay() {
+      var first = play.hidden;
+      show("play");
+      if (game.round !== shownRound || (game.state === "countdown" && lockedRound === game.round)) {
+        if (game.state === "countdown" && lockedRound === game.round) lockedRound = 0;   // round fatto ripartire dalla regia
+        loadRound(game.round);
       }
-      if (e.target.closest("[data-replay]")) { results = []; $("[data-end]").hidden = true; root.hidden = false; load(0); cd.innerHTML = '<button type="button" class="btn btn--primary" data-start>Sono pronto</button>'; cd.hidden = false; return; }
+      var p = mine();
+      if (p && p.answered_round >= game.round && lockedRound !== game.round) { lockedRound = game.round; setLocked("Risposta registrata"); }
+      if (first) window.scrollTo(0, 0);
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(tick);
+    }
+
+    function tick() {
+      if (!game || play.hidden || (game.state !== "countdown" && game.state !== "round")) return;
+      var el = NET.now() - game.phase_ms;
+      play.setAttribute("data-phase", game.state);
+      if (game.state === "countdown") {
+        var n = Math.max(1, Math.min(3, 3 - Math.floor(el / 1000)));
+        cd.hidden = false;
+        if (n !== lastCd) { lastCd = n; cd.innerHTML = '<span class="countdown__n' + (reduce ? "" : " is-pop") + '">' + n + "</span>"; }
+      } else {
+        cd.hidden = true;
+        img.classList.remove("is-hidden");
+        var p = Math.min(1, Math.max(0, el / game.round_ms));
+        if (lockedRound !== game.round) {
+          media.style.setProperty("--blur", blurAt(p).toFixed(2) + "px");
+          $("[data-timebar]").style.setProperty("--left", (1 - p).toFixed(4));
+          if (p >= 1) { lockedRound = game.round; setLocked("Tempo scaduto"); }
+          else if (!sending) opts.forEach(function (o) { o.removeAttribute("aria-disabled"); });
+        }
+      }
+      raf = requestAnimationFrame(tick);
+    }
+
+    $("[data-options]").addEventListener("click", function (e) {
       var o = e.target.closest("[data-opt]");
-      if (o && o.getAttribute("aria-disabled") !== "true" && !done) {
-        finish(+o.getAttribute("data-opt"), Math.min(DURATION, performance.now() - t0));   // risposta bloccata al primo tocco
-      }
+      if (!o || o.getAttribute("aria-disabled") === "true" || !game || game.state !== "round" || !me) return;
+      if (lockedRound === game.round || sending) return;
+      var round = game.round, choice = +o.getAttribute("data-opt");
+      sending = true;
+      opts.forEach(function (x) { x.setAttribute("aria-disabled", "true"); });
+      lockedRound = round;                              // risposta bloccata al primo tocco
+      setLocked("Risposta registrata");
+      $("[data-note]").textContent = "";
+      if (navigator.vibrate) navigator.vibrate(12);
+      NET.answer(me.playerId, me.secret, round, choice).then(function (r) {
+        sending = false;
+        if (r && r.ok === false && (r.reason === "late" || r.reason === "closed") && game && game.round === round) setLocked("Tempo scaduto");
+      }).catch(function () {
+        sending = false;
+        if (game && game.state === "round" && game.round === round && NET.now() < game.ends_ms) {
+          lockedRound = 0; setLocked(null);             // non è arrivata: si può ritoccare
+          $("[data-note]").textContent = "La risposta non è arrivata. Tocca di nuovo.";
+        }
+      });
     });
+
+    /* ---------- Avvio ---------- */
+    $("[data-enter]").addEventListener("click", enter);
+    ready.then(function () {
+      var saved = NET.store("player");
+      if (!saved) return;
+      return NET.getGame(saved.gameId).then(function (g) {
+        if (!g || g.state === "closed") { NET.store("player", null); return; }
+        me = saved; follow(g.id);                       // rientro dopo una ricarica
+      });
+    }).catch(function () {});
   })();
   </script>
 </body>
