@@ -86,13 +86,13 @@
     .race__head { display: grid; gap: 6px; }
     .road { position: relative; flex: 1; min-height: 0; }
     .road svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-    .road__label { font: 600 16px/1 var(--sans); letter-spacing: .14em; fill: var(--text); }
-    .pawn { position: absolute; left: 0; top: 0; height: var(--pawn-h, 52px); transform-origin: 50% 100%; will-change: transform; pointer-events: none; }
+    .road__label { font: 600 58px/1 var(--sans); letter-spacing: .14em; fill: var(--text); paint-order: stroke; stroke: rgba(8, 11, 11, .7); stroke-width: 10px; }
+    .pawn { position: absolute; left: 0; top: 0; height: var(--pawn-h, 52px); transform-origin: 0 0; will-change: transform; pointer-events: none; }
     .pawn img { height: 100%; width: auto; display: block; filter: drop-shadow(0 6px 6px rgba(0,0,0,.55)); }
     .pawn.is-in { animation: drop 600ms var(--ease); }
     /* Nome del giocatore accanto alla pedina, legato da un filo sottile */
     .pawn__tag { position: absolute; top: calc(34% + var(--tag-dy, 0px)); left: 100%; margin-left: 12px; padding: 4px 8px; border-radius: 999px; white-space: nowrap;
-      background: rgba(8, 11, 11, .86); border: 1px solid var(--line); color: var(--text); font: 600 10px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; }
+      background: rgba(8, 11, 11, .86); border: 1px solid var(--line); color: var(--text); font: 600 calc(10px / var(--k, 1))/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; }
     .pawn__tag::before { content: ""; position: absolute; top: 50%; right: 100%; width: 12px; height: 1px; background: rgba(243, 239, 231, .55); }
     .pawn--l .pawn__tag { left: auto; right: 100%; margin: 0 12px 0 0; }
     .pawn--l .pawn__tag::before { right: auto; left: 100%; }
@@ -239,26 +239,18 @@
         <p class="t-meta muted" style="font-size:11px">Si muove dopo ogni round</p>
       </div>
       <div class="road" data-road>
-        <svg viewBox="0 0 400 640" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <svg viewBox="0 170 1696 2358" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
           <defs>
-            <pattern id="check" width="10" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="#F3EFE7"/><rect width="5" height="5" fill="#080B0B"/><rect x="5" y="5" width="5" height="5" fill="#080B0B"/></pattern>
-            <radialGradient id="startglow"><stop offset="0" stop-color="#FFE9B8" stop-opacity=".75"/><stop offset="1" stop-color="#FFE9B8" stop-opacity="0"/></radialGradient>
-            <linearGradient id="asph" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#2E2B28"/><stop offset="1" stop-color="#1E1D1B"/></linearGradient>
+            <linearGradient id="fade-v" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#080B0B"/><stop offset=".08" stop-color="#080B0B" stop-opacity="0"/><stop offset=".9" stop-color="#080B0B" stop-opacity="0"/><stop offset="1" stop-color="#080B0B"/></linearGradient>
+            <linearGradient id="fade-h" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#080B0B"/><stop offset=".07" stop-color="#080B0B" stop-opacity="0"/><stop offset=".93" stop-color="#080B0B" stop-opacity="0"/><stop offset="1" stop-color="#080B0B"/></linearGradient>
           </defs>
-          <g fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <use href="#track" stroke="#000" stroke-opacity=".6" stroke-width="66" transform="translate(0 14)"/>
-            <use href="#track" stroke="#121110" stroke-width="62" transform="translate(0 8)"/>
-            <use href="#track" stroke="rgba(243,239,231,.38)" stroke-width="58"/>
-            <use href="#track" stroke="url(#asph)" stroke-width="54"/>
-            <path id="track" data-track d="M 196 612 L 290 601 C 380 590, 390 520, 300 500 S 70 470, 80 400 S 330 350, 330 290 S 90 240, 100 180 S 260 120, 330 70"/>
-            <use href="#track" stroke="rgba(243,239,231,.32)" stroke-width="1.6" stroke-dasharray="7 11"/>
-          </g>
-          <ellipse cx="290" cy="601" rx="50" ry="22" fill="url(#startglow)"/>
-          <rect x="287" y="578" width="5" height="34" rx="2.5" fill="#FFF3D6" transform="rotate(-7 290 601)"/>
-          <text class="road__label" x="290" y="638" text-anchor="middle">START</text>
-          <line x1="352" y1="72" x2="352" y2="6" stroke="#B9B4AB" stroke-width="2"/>
-          <path d="M352 6 h42 l-4 13 4 13 h-42 z" fill="url(#check)"/>
-          <text class="road__label" x="290" y="44" text-anchor="middle">TRAGUARDO</text>
+          <image href="assets/images/zoom-race-strada.webp" x="0" y="170" width="1696" height="2358" preserveAspectRatio="none"/>
+          <rect x="0" y="170" width="1696" height="2358" fill="url(#fade-v)"/>
+          <rect x="0" y="170" width="1696" height="2358" fill="url(#fade-h)"/>
+          <!-- percorso invisibile ricalcato sulla linea di mezzeria della strada -->
+          <path data-track fill="none" stroke="none" d="M 1694 2509 C 1670 2485, 1604 2410, 1548 2364 C 1492 2318, 1415 2268, 1359 2231 C 1303 2194, 1262 2172, 1211 2142 C 1160 2112, 1108 2086, 1055 2054 C 1002 2022, 947 1984, 891 1947 C 835 1910, 770 1869, 720 1835 C 670 1801, 624 1771, 594 1744 C 564 1717, 548 1697, 537 1675 C 526 1653, 523 1631, 525 1612 C 527 1593, 532 1577, 547 1561 C 562 1545, 586 1530, 616 1517 C 646 1504, 686 1490, 724 1481 C 762 1472, 805 1468, 841 1464 C 877 1460, 905 1458, 942 1454 C 979 1450, 1027 1442, 1062 1437 C 1097 1432, 1120 1430, 1150 1423 C 1180 1416, 1218 1411, 1245 1397 C 1272 1383, 1297 1360, 1315 1340 C 1333 1320, 1349 1296, 1355 1277 C 1361 1258, 1357 1239, 1350 1224 C 1343 1209, 1332 1199, 1315 1188 C 1298 1177, 1275 1167, 1251 1157 C 1227 1147, 1200 1136, 1169 1129 C 1138 1122, 1100 1115, 1062 1112 C 1024 1109, 980 1111, 942 1109 C 904 1107, 870 1104, 834 1102 C 798 1100, 762 1102, 727 1100 C 692 1098, 659 1094, 626 1090 C 593 1086, 563 1080, 531 1074 C 499 1068, 463 1061, 436 1053 C 409 1045, 386 1036, 367 1024 C 348 1012, 333 997, 322 983 C 311 969, 304 955, 303 942 C 302 929, 308 917, 316 904 C 324 891, 333 878, 348 866 C 363 854, 381 844, 404 834 C 427 824, 460 812, 487 805 C 514 798, 538 796, 569 793 C 600 790, 641 788, 676 786 C 711 784, 742 785, 777 784 C 812 783, 854 783, 885 781 C 916 779, 932 775, 961 771 C 990 767, 1032 762, 1062 758 C 1092 754, 1119 754, 1144 746 C 1169 738, 1193 720, 1213 708 C 1233 696, 1247 689, 1264 676 C 1281 663, 1306 639, 1315 632"/>
+          <text class="road__label" x="1045" y="2258" text-anchor="end">START</text>
+          <text class="road__label" x="1290" y="250" text-anchor="middle">TRAGUARDO</text>
         </svg>
         <div data-pawns></div>
       </div>
@@ -295,7 +287,14 @@
     var track = $("[data-track]"), svg = roadEl.querySelector("svg");
     var bar = $("[data-bar]"), statusEl = $("[data-status]"), go = $("[data-go]");
     var TRACK_LEN = track.getTotalLength();
-    var START = 95;                                         // la linea di partenza: prima c'è il paddock
+    var START = lengthNear(1211, 2142);                     // la linea di partenza illuminata: prima c'è il paddock
+    function lengthNear(x, y) {                             // punto del percorso più vicino a (x, y)
+      var best = 0, bd = Infinity;
+      for (var L = 0; L <= TRACK_LEN; L += 4) { var q = track.getPointAtLength(L), d = (q.x - x) * (q.x - x) + (q.y - y) * (q.y - y); if (d < bd) { bd = d; best = L; } }
+      return best;
+    }
+    /* Prospettiva: le pedine lontane (in alto) sono più piccole */
+    function persp(y) { return 0.58 + 0.42 * Math.max(0, Math.min(1, (y - 700) / 1600)); }
 
     var gameId = null, game = null, players = [], unwatch = null;
     var phase = "boot", running = false, boardRound = 0;
@@ -389,8 +388,9 @@
       var nx = -dy / len, ny = dx / len;                    // normale alla strada
       var perRow = 3, row = Math.floor(lane / perRow), col = lane % perRow;
       var cols = Math.min(perRow, laneCount - row * perRow);
-      var off = (col - (cols - 1) / 2) * 15;                // affiancate sulla carreggiata
-      var back = row * 18;                                  // file successive un po' indietro
+      var k = persp(p.y);
+      var off = (col - (cols - 1) / 2) * 60 * k;            // affiancate sulla carreggiata
+      var back = row * 70 * k;                              // file successive un po' indietro
       return { x: p.x + nx * off - (dx / len) * back, y: p.y + ny * off - (dy / len) * back };
     }
     function toScreen(pt) {
@@ -402,7 +402,7 @@
       var groups = {}, ids = Object.keys(view);
       ids.forEach(function (id) { var v = view[id], k = Math.round(v.score / 40); (groups[k] = groups[k] || []).push(v); });
       var scale = svg.getScreenCTM().a;
-      document.documentElement.style.setProperty("--pawn-h", Math.round(Math.max(30, Math.min(60, 46 * scale))) + "px");
+      document.documentElement.style.setProperty("--pawn-h", Math.round(Math.max(30, Math.min(78, 170 * scale))) + "px");
       Object.keys(groups).forEach(function (k) {
         groups[k].sort(function (a, b) { return a.ms - b.ms; }).forEach(function (v, i, g) {
           v.lane = i; v.laneCount = g.length;
@@ -427,8 +427,9 @@
       });
     }
     function draw(v) {
-      var s = toScreen(pointAt(v.shown, v.lane || 0, v.laneCount || 1));
-      v.el.style.transform = "translate(" + s.x + "px," + s.y + "px) translate(-50%, -88%)";
+      var pt = pointAt(v.shown, v.lane || 0, v.laneCount || 1), s = toScreen(pt), k = persp(pt.y);
+      v.el.style.transform = "translate(" + s.x + "px," + s.y + "px) scale(" + k.toFixed(3) + ") translate(-50%, -88%)";
+      v.el.style.setProperty("--k", k.toFixed(3));
       v.el.style.zIndex = Math.round(s.y);
     }
     /* Corsa finale: il primo taglia il traguardo, gli altri in proporzione ai suoi punti */
