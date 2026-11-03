@@ -200,6 +200,19 @@ html[data-mode="landscape"] .landscape-block {
 .choices .btn { padding: 0 var(--s2); }
 .question { text-align: center; color: var(--text); margin-bottom: var(--s1); }
 
+/* ---------- Torna all'inizio (logo) ---------- */
+.topbar { padding: var(--s2) var(--gutter) 0; }
+.topbar + .screen__body, .topbar + .screen__form .screen__body { padding-top: var(--s4); }
+.home {
+  width: var(--tap); height: var(--tap); margin-left: -12px;
+  display: grid; place-items: center;
+  background: none; border: 0; border-radius: 12px; color: var(--text); cursor: pointer;
+  transition: opacity var(--dur-press) var(--ease);
+}
+.home:active { opacity: 0.6; }
+.round__top { display: flex; align-items: center; gap: var(--s1); margin: calc(var(--s3) * -1) 0 calc(var(--s1) * -1); }
+.screen--splash [data-action="splash-secondary"] { margin-top: calc(var(--s2) * -1); }
+
 /* ---------- Splash ---------- */
 .screen--splash { position: relative; overflow: hidden; }
 .screen--splash .screen__body { justify-content: flex-start; gap: var(--s4); position: relative; z-index: 1; }

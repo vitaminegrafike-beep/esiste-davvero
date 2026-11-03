@@ -632,6 +632,68 @@
     });
   }
 
+  /* ---------------- Splash: inizia, riprendi o ricomincia ---------------- */
+
+  function inProgress() {
+    var n = state.answers.filter(function (a) { return a !== undefined && a !== null; }).length;
+    return n > 0 && n < TOTAL;
+  }
+
+  function renderSplash() {
+    var label = $("[data-start-label]");
+    var second = $("[data-action='splash-secondary']");
+    if (inProgress()) {
+      label.textContent = "Riprendi dal round " + (state.round + 1);
+      second.textContent = "Ricomincia da capo";
+      second.setAttribute("data-mode", "restart");
+      second.hidden = false;
+    } else if (state.firstResult) {
+      label.textContent = "Inizia";
+      second.textContent = "Vedi la graduatoria";
+      second.setAttribute("data-mode", "board");
+      second.hidden = false;
+    } else {
+      label.textContent = "Inizia";
+      second.hidden = true;
+    }
+  }
+
+  function showSplash() {
+    renderSplash();
+    show("splash");
+  }
+
+  function onStart() {
+    if (inProgress()) {
+      var i = state.round;
+      goToRound(i, state.answers[i] === undefined ? "question" : "reveal");
+      return;
+    }
+    if (state.firstResult) {
+      // Ha già giocato: nuova partita senza nuovo invio in graduatoria.
+      state.answers = [];
+      state.round = 0;
+      state.replay = true;
+      state.lastScore = undefined;
+      saveState();
+      show("istruzioni");
+      return;
+    }
+    if (state.nickname) $("#nickname").value = state.nickname;
+    show("nickname");
+  }
+
+  function onSplashSecondary(mode) {
+    if (mode === "board") { showBoard(); return; }
+    // Ricomincia da capo: stesso nickname, risposte azzerate.
+    state.answers = [];
+    state.round = 0;
+    state.lastScore = undefined;
+    if (state.firstResult) state.replay = true;
+    saveState();
+    show("istruzioni");
+  }
+
   /* ---------------- Rigioca ---------------- */
 
   function replay() {
@@ -663,10 +725,9 @@
     if (actionLock) return;
     lockActions();
     switch (action) {
-      case "start":
-        if (state.nickname) $("#nickname").value = state.nickname;
-        show("nickname");
-        break;
+      case "start": onStart(); break;
+      case "splash-secondary": onSplashSecondary(btn.getAttribute("data-mode")); break;
+      case "home": showSplash(); break;
       case "play": goToRound(0, "question"); break;
       case "leaderboard": showBoard(); break;
       case "stats": show("statistiche"); loadStats(); break;
@@ -696,6 +757,10 @@
     $$("[data-mock-badge]").forEach(function (b) { b.hidden = !CONFIG.useMockData; });
     updateOnline();
 
+    var nav = (performance.getEntriesByType && performance.getEntriesByType("navigation")[0]) || {};
+    var isReload = nav.type === "reload" || (performance.navigation && performance.navigation.type === 1);
+    if (!isReload) { showSplash(); return; } // aprire il link o il QR riparte sempre dalla splash
+
     var s = state.screen;
     if (state.firstResult && !state.replay && (s === "splash" || s === "nickname" || s === "istruzioni" || s === "round")) s = "risultato";
 
@@ -712,7 +777,7 @@
       case "risultato": showResult(); break;
       case "graduatoria": showBoard(); break;
       case "statistiche": show("statistiche"); loadStats(); break;
-      default: show("splash");
+      default: showSplash();
     }
   }
 

@@ -63,13 +63,15 @@
         <p class="t-body muted">8 prodotti. Alcuni esistono davvero.</p>
       </div>
       <div class="actions">
-        <button type="button" class="btn btn--primary" data-action="start">Inizia <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+        <button type="button" class="btn btn--primary" data-action="start"><span data-start-label>Inizia</span> <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+        <button type="button" class="btn btn--text" data-action="splash-secondary" hidden></button>
         <p class="t-meta muted splash__footer">Design, marketing, intuizione.<br>Quanto sei davvero attento?</p>
       </div>
     </section>
 
     <!-- 2 Nickname -->
     <section class="screen" data-screen="nickname" hidden>
+      <div class="topbar"><button type="button" class="home" data-action="home" aria-label="Torna all’inizio"><svg class="logo" aria-hidden="true"><use href="#i-logo"/></svg></button></div>
       <form class="screen__form" data-form="nickname" novalidate>
         <div class="screen__body">
           <h1 class="t-h1" tabindex="-1" data-focus>Prima, come vuoi farti chiamare?</h1>
@@ -91,6 +93,7 @@
 
     <!-- 3 Istruzioni -->
     <section class="screen" data-screen="istruzioni" hidden>
+      <div class="topbar"><button type="button" class="home" data-action="home" aria-label="Torna all’inizio"><svg class="logo" aria-hidden="true"><use href="#i-logo"/></svg></button></div>
       <div class="screen__body">
         <h1 class="t-h1" tabindex="-1" data-focus>8 prodotti.<br>Alcuni esistono davvero.<br>Gli altri ce li siamo inventati.</h1>
         <ol class="steps">
@@ -109,7 +112,7 @@
     <!-- 4-5 Round e reveal -->
     <section class="screen screen--round" data-screen="round" hidden>
       <header class="round__header">
-        <p class="t-meta" data-counter>Round 1 di 8</p>
+        <div class="round__top"><button type="button" class="home" data-action="home" aria-label="Torna all’inizio"><svg class="logo" aria-hidden="true"><use href="#i-logo"/></svg></button><p class="t-meta" data-counter>Round 1 di 8</p></div>
         <div class="progress" role="progressbar" aria-label="Avanzamento" aria-valuemin="0" aria-valuemax="8" aria-valuenow="1">
           <span class="progress__fill" data-progress></span>
         </div>
@@ -152,6 +155,7 @@
 
     <!-- 6 Risultato -->
     <section class="screen screen--result" data-screen="risultato" hidden>
+      <div class="topbar"><button type="button" class="home" data-action="home" aria-label="Torna all’inizio"><svg class="logo" aria-hidden="true"><use href="#i-logo"/></svg></button></div>
       <div class="screen__body result">
         <p class="t-meta accent">Il tuo risultato</p>
         <p class="t-score" data-score>0 / 8</p>
@@ -167,6 +171,7 @@
 
     <!-- 7 Graduatoria -->
     <section class="screen" data-screen="graduatoria" hidden>
+      <div class="topbar"><button type="button" class="home" data-action="home" aria-label="Torna all’inizio"><svg class="logo" aria-hidden="true"><use href="#i-logo"/></svg></button></div>
       <div class="screen__body">
         <h1 class="t-h1" tabindex="-1" data-focus>Graduatoria</h1>
         <p class="t-body muted">Qui conta l’occhio, non la velocità.</p>
@@ -180,6 +185,7 @@
 
     <!-- 8 Statistiche -->
     <section class="screen" data-screen="statistiche" hidden>
+      <div class="topbar"><button type="button" class="home" data-action="home" aria-label="Torna all’inizio"><svg class="logo" aria-hidden="true"><use href="#i-logo"/></svg></button></div>
       <div class="screen__body">
         <h1 class="t-h1" tabindex="-1" data-focus>Com’è andato il gruppo?</h1>
         <div class="stats" data-stats aria-live="polite" aria-busy="false"></div>
