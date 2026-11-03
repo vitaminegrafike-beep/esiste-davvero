@@ -205,7 +205,7 @@
     $$("[data-phase-question]", screen).forEach(function (el) { el.hidden = phase !== "question"; });
     $$("[data-phase-reveal]", screen).forEach(function (el) { el.hidden = phase !== "reveal"; });
     $("[data-pill]").hidden = phase !== "reveal";
-    if (phase !== "reveal") $("[data-media]").classList.remove("is-correct", "is-wrong");
+    if (phase !== "reveal") $("[data-media]").classList.remove("is-exists", "is-not-exists");
   }
 
   function renderRound(i, phase) {
@@ -245,6 +245,7 @@
       b.removeAttribute("aria-pressed");
     });
 
+    resetSlide(i === 0 && phase === "question" && state.answers[0] === undefined);
     if (phase === "reveal") fillReveal(i);
     setPhase(phase);
     if (phase === "question") requestAnimationFrame(fitMedia);
@@ -276,10 +277,9 @@
 
     var pill = $("[data-pill]");
     $("[data-pill-text]").textContent = r.exists ? "Esiste" : "Non esiste";
-    $("[data-pill-icon]").setAttribute("href", correct ? "#i-tick" : "#i-miss");
     var media = $("[data-media]");
-    media.classList.toggle("is-correct", correct);
-    media.classList.toggle("is-wrong", !correct);
+    media.classList.toggle("is-exists", r.exists);
+    media.classList.toggle("is-not-exists", !r.exists);
 
     var verdict = $("[data-verdict]");
     $("[data-verdict-text]").textContent = correct ? "Esatto." : "Non proprio.";
@@ -307,6 +307,64 @@
     requestAnimationFrame(function () { focusEl.focus({ preventScroll: true }); });
   }
 
+  /* ---------------- Cursore Esiste / Non esiste ---------------- */
+  var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var slideX = 0;
+  function slideEl() { return $("[data-slide]"); }
+  function slideTravel() { var el = slideEl(); return Math.max(40, (el.clientWidth - 60) / 2); }
+  function setSlide(v) {
+    var el = slideEl();
+    slideX = Math.max(-1, Math.min(1, v));
+    el.style.setProperty("--x", slideX);
+    el.style.setProperty("--travel", slideTravel() + "px");
+    var t = Math.abs(slideX) * 0.55, c = slideX >= 0 ? [151, 197, 158] : [199, 142, 120], b = [243, 239, 231];
+    $("[data-knob]").style.setProperty("--knob-bg", "rgb(" + b.map(function (n, k) { return Math.round(n + (c[k] - n) * t); }).join(",") + ")");
+  }
+  function settleSlide(v) {
+    var el = slideEl();
+    el.classList.add("is-settling");
+    setSlide(v);
+    setTimeout(function () { el.classList.remove("is-settling"); }, REDUCED ? 0 : 360);
+  }
+  function resetSlide(nudge) {
+    var el = slideEl();
+    el.classList.remove("is-done", "is-dragging", "is-settling", "is-nudging");
+    setSlide(0);
+    if (nudge) { void el.offsetWidth; el.classList.add("is-nudging"); }
+  }
+  function commitSlide(value) {
+    var el = slideEl();
+    el.classList.remove("is-nudging");
+    el.classList.add("is-done");
+    settleSlide(value ? 1 : -1);
+  }
+  (function initSlide() {
+    var knob = $("[data-knob]");
+    var startX = 0, startVal = 0, dragging = false;
+    knob.addEventListener("pointerdown", function (e) {
+      if (state.phase !== "question") return;
+      var el = slideEl();
+      el.classList.remove("is-nudging", "is-settling");
+      dragging = true; startX = e.clientX; startVal = slideX;
+      knob.setPointerCapture(e.pointerId);
+      el.classList.add("is-dragging");
+    });
+    knob.addEventListener("pointermove", function (e) {
+      if (dragging) setSlide(startVal + (e.clientX - startX) / slideTravel());
+    });
+    function release() {
+      if (!dragging) return;
+      dragging = false;
+      slideEl().classList.remove("is-dragging");
+      if (slideX > 0.7) { onAnswer($("[data-answer='true']")); return; }
+      if (slideX < -0.7) { onAnswer($("[data-answer='false']")); return; }
+      settleSlide(0);
+    }
+    knob.addEventListener("pointerup", release);
+    knob.addEventListener("pointercancel", release);
+    window.addEventListener("resize", function () { setSlide(slideX); });
+  })();
+
   function onAnswer(btn) {
     if (state.phase !== "question" || btn.getAttribute("aria-disabled") === "true") return;
     var i = state.round;
@@ -314,6 +372,7 @@
     $$("[data-answer]").forEach(function (b) { b.setAttribute("aria-disabled", "true"); });
     btn.classList.add("is-selected");
     btn.setAttribute("aria-pressed", "true");
+    commitSlide(value);
     state.answers[i] = value;
     state.phase = "reveal";
     saveState();
@@ -321,7 +380,7 @@
       fillReveal(i);
       setPhase("reveal");
       $("[data-reveal-title]").focus({ preventScroll: true });
-    }, 180);
+    }, REDUCED ? 0 : 380);
   }
 
   function onNext() {

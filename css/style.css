@@ -278,16 +278,16 @@ html[data-mode="landscape"] .landscape-block {
 .pill {
   position: absolute; top: var(--s4); left: var(--gutter); z-index: 1;
   display: inline-flex; align-items: center; gap: var(--s2);
-  padding: 10px var(--s4) 10px 14px;
+  padding: 10px var(--s4);
   border-radius: var(--r-pill);
   background: var(--text); color: var(--bg);
   box-shadow: 0 4px 16px rgba(8, 11, 11, 0.35);
   font-size: 13px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; line-height: 1;
   animation: reveal-in var(--dur-reveal) var(--ease) both;
 }
-.pill .icon { width: 16px; height: 16px; flex: none; }
-.media.is-correct .pill { background: var(--correct); }
-.media.is-wrong .pill { background: var(--wrong); }
+/* Colore = verità del prodotto: verde esiste, terracotta non esiste */
+.media.is-exists .pill { background: var(--correct); }
+.media.is-not-exists .pill { background: var(--wrong); }
 .round__body { padding-top: var(--s6); padding-bottom: var(--s8); gap: 0; }
 .round__info { display: grid; gap: 0; }
 .round__reveal { display: grid; gap: var(--s2); }
@@ -302,8 +302,8 @@ html[data-mode="landscape"] .landscape-block {
 
 .verdict { display: inline-flex; align-items: center; gap: var(--s2); }
 .verdict .icon { width: 16px; height: 16px; }
-.verdict.is-correct { color: var(--correct); }
-.verdict.is-wrong { color: var(--wrong); }
+/* Esatto / Non proprio: neutro, il colore resta riservato a esiste / non esiste */
+.verdict { color: var(--text); }
 .round__reveal [data-payoff] { margin-top: var(--s4); color: var(--text); }
 .round__reveal [data-payoff] + [data-transition] { margin-top: 0; font-size: 18px; }
 .round__reveal [data-transition] { margin-top: var(--s4); color: var(--text-muted); }
@@ -388,3 +388,48 @@ html[data-preview] .app::-webkit-scrollbar { width: 0; }
   .round__info [data-description] { margin-top: var(--s3); }
   .round__info [data-category] { margin-top: var(--s4); }
 }
+
+/* ---------- Cursore Esiste / Non esiste ---------- */
+.slide {
+  --x: 0; --knob: 52px;
+  position: relative; height: 60px; border-radius: var(--r-pill);
+  background: var(--surface-2); border: 1px solid var(--border-strong);
+  overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none;
+}
+.slide__fill {
+  position: absolute; top: 0; bottom: 0; width: 50%; pointer-events: none;
+}
+.slide__fill--yes {
+  left: 50%; transform-origin: left center; transform: scaleX(max(var(--x), 0));
+  background: linear-gradient(to right, rgba(151, 197, 158, 0.06), rgba(151, 197, 158, 0.38));
+}
+.slide__fill--no {
+  left: 0; transform-origin: right center; transform: scaleX(max(calc(var(--x) * -1), 0));
+  background: linear-gradient(to left, rgba(199, 142, 120, 0.06), rgba(199, 142, 120, 0.38));
+}
+.slide__label {
+  position: absolute; top: 0; bottom: 0; display: flex; align-items: center;
+  background: none; border: 0; cursor: pointer;
+  font: 600 13px/1 var(--sans); letter-spacing: 0.08em; text-transform: uppercase;
+}
+.slide__label--no { left: 0; padding: 0 var(--s4) 0 18px; color: var(--wrong); opacity: calc(1 - max(var(--x), 0) * 1.4); }
+.slide__label--yes { right: 0; padding: 0 18px 0 var(--s4); color: var(--correct); opacity: calc(1 + min(var(--x), 0) * 1.4); }
+.slide__label:focus-visible { outline: 2px solid var(--text); outline-offset: -4px; border-radius: var(--r-pill); }
+.slide__knob {
+  position: absolute; top: 50%; left: 50%; width: var(--knob); height: var(--knob);
+  margin: calc(var(--knob) / -2) 0 0 calc(var(--knob) / -2);
+  border-radius: 50%; background: var(--knob-bg, var(--text)); color: var(--bg);
+  display: grid; place-items: center; cursor: grab; touch-action: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  transform: translateX(calc(var(--x) * var(--travel, 120px))) scale(var(--press, 1));
+}
+.slide__knob svg { width: 26px; height: 26px; }
+.slide.is-dragging .slide__knob { cursor: grabbing; --press: 1.06; }
+.slide.is-settling .slide__knob, .slide.is-settling .slide__fill, .slide.is-settling .slide__label {
+  transition: transform 360ms var(--ease), opacity 360ms var(--ease);
+}
+.slide.is-done { pointer-events: none; }
+@property --x { syntax: "<number>"; inherits: true; initial-value: 0; }
+@keyframes slide-nudge { 0%, 100% { --x: 0; } 30% { --x: -0.22; } 65% { --x: 0.22; } }
+.slide.is-nudging { animation: slide-nudge 1500ms var(--ease) 700ms both; }
+@media (prefers-reduced-motion: reduce) { .slide.is-nudging { animation: none; } }

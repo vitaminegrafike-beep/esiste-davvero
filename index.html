@@ -25,6 +25,7 @@
     <symbol id="i-miss" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8.5 12h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
     <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 7.5v5.5M12 16.2v.1" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
     <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-both" viewBox="0 0 24 24"><path d="m9 7-5 5 5 5M15 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-rotate" viewBox="0 0 48 48"><rect x="15" y="6" width="18" height="32" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M21 33h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M38 20a14 14 0 0 1-6 16m0 0 1-5m-1 5 5 0" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   </svg>
 
@@ -122,7 +123,7 @@
       <figure class="media" data-media>
         <img data-image src="" alt="" width="1024" height="1280" decoding="async">
         <span class="media__fallback t-meta" data-image-fallback hidden></span>
-        <span class="pill" data-pill hidden><svg class="icon" aria-hidden="true"><use data-pill-icon href="#i-tick"/></svg><span data-pill-text></span></span>
+        <span class="pill" data-pill hidden><span data-pill-text></span></span>
       </figure>
       <div class="screen__body round__body">
         <!-- Domanda -->
@@ -143,9 +144,12 @@
       </div>
       <div class="actions">
         <div data-phase-question>
-          <div class="choices" role="group" aria-label="Questo prodotto esiste davvero?">
-            <button type="button" class="btn btn--choice" data-answer="true">Esiste<svg class="btn__tick" aria-hidden="true"><use href="#i-tick"/></svg></button>
-            <button type="button" class="btn btn--choice" data-answer="false">Non esiste<svg class="btn__tick" aria-hidden="true"><use href="#i-tick"/></svg></button>
+          <div class="slide" data-slide role="group" aria-label="Questo prodotto esiste davvero?">
+            <span class="slide__fill slide__fill--no" aria-hidden="true"></span>
+            <span class="slide__fill slide__fill--yes" aria-hidden="true"></span>
+            <button type="button" class="slide__label slide__label--no" data-answer="false">Non esiste</button>
+            <button type="button" class="slide__label slide__label--yes" data-answer="true">Esiste</button>
+            <span class="slide__knob" data-knob aria-hidden="true"><svg><use href="#i-both"/></svg></span>
           </div>
         </div>
         <div data-phase-reveal hidden>
