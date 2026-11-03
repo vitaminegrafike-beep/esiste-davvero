@@ -57,10 +57,12 @@
       <div class="splash__bg" aria-hidden="true"></div>
       <div class="screen__body">
         <svg class="logo" aria-hidden="true"><use href="#i-logo"/></svg>
-        <p class="t-meta accent splash__eyebrow">Un piccolo gioco per grandi osservatori</p>
-        <h1 class="t-display" tabindex="-1" data-focus>Esiste<br>davvero?</h1>
-        <p class="t-lead">Il design ha superato la fantasia?</p>
-        <p class="t-body muted">8 prodotti. Alcuni esistono davvero.</p>
+        <div class="splash__content">
+          <p class="t-meta accent splash__eyebrow">Un piccolo gioco per grandi osservatori</p>
+          <h1 class="t-display" tabindex="-1" data-focus>Esiste<br>davvero?</h1>
+          <p class="t-lead">Il design ha superato la fantasia?</p>
+          <p class="t-body muted">8 prodotti. Alcuni esistono davvero.</p>
+        </div>
       </div>
       <div class="actions">
         <button type="button" class="btn btn--primary" data-action="start"><span data-start-label>Inizia</span> <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
@@ -140,8 +142,7 @@
       </div>
       <div class="actions">
         <div data-phase-question>
-          <p class="t-meta question">Questo prodotto esiste davvero?</p>
-          <div class="choices">
+          <div class="choices" role="group" aria-label="Questo prodotto esiste davvero?">
             <button type="button" class="btn btn--choice" data-answer="true">Esiste<svg class="btn__tick" aria-hidden="true"><use href="#i-tick"/></svg></button>
             <button type="button" class="btn btn--choice" data-answer="false">Non esiste<svg class="btn__tick" aria-hidden="true"><use href="#i-tick"/></svg></button>
           </div>

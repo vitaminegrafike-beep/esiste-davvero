@@ -198,7 +198,6 @@ html[data-mode="landscape"] .landscape-block {
 
 .choices { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s3); }
 .choices .btn { padding: 0 var(--s2); }
-.question { text-align: center; color: var(--text); margin-bottom: var(--s1); }
 
 /* ---------- Torna all'inizio (logo) ---------- */
 .topbar { padding: var(--s2) var(--gutter) 0; }
@@ -215,19 +214,23 @@ html[data-mode="landscape"] .landscape-block {
 
 /* ---------- Splash ---------- */
 .screen--splash { position: relative; overflow: hidden; }
-.screen--splash .screen__body { justify-content: flex-start; gap: var(--s4); position: relative; z-index: 1; }
-.screen--splash .logo { margin-bottom: var(--s6); }
-.splash__eyebrow { margin-top: auto; }
-.screen--splash .t-display { margin: var(--s2) 0 var(--s2); }
+.screen--splash .screen__body { justify-content: center; gap: 0; position: relative; z-index: 1; padding-bottom: var(--s8); }
+.screen--splash .logo { position: absolute; top: var(--s8); left: var(--gutter); }
+.splash__content { display: grid; padding-top: var(--s16); }
+.splash__eyebrow { margin-bottom: var(--s6); }
+.screen--splash .t-display { margin-bottom: var(--s6); }
+.screen--splash .t-lead { margin-bottom: var(--s2); color: var(--text); }
 .splash__bg {
-  position: absolute; left: 0; right: 0; bottom: 0; height: 55%;
-  background: url("../assets/images/09-background-dark-stone.webp") center 30% / cover no-repeat;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 60%);
-          mask-image: linear-gradient(to bottom, transparent 0, #000 60%);
-  opacity: 0.55;
+  position: absolute; inset: 0;
+  background: url("../assets/images/09-background-dark-stone.webp") center 40% / cover no-repeat;
+  opacity: 0.6;
 }
-.screen--splash .actions { background: none; }
-.splash__footer { text-align: center; line-height: 1.7; }
+.splash__bg::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(8, 11, 11, 0.7) 0, rgba(8, 11, 11, 0.35) 35%, rgba(8, 11, 11, 0.45) 60%, rgba(8, 11, 11, 0.9) 100%);
+}
+.screen--splash .actions { background: none; padding-bottom: calc(var(--s6) + env(safe-area-inset-bottom)); }
+.splash__footer { text-align: center; line-height: 1.7; margin-top: var(--s4); }
 
 /* ---------- Nickname ---------- */
 .field { display: grid; gap: var(--s2); margin-top: var(--s4); }
@@ -281,14 +284,16 @@ html[data-mode="landscape"] .landscape-block {
   animation: reveal-in var(--dur-reveal) var(--ease) both;
 }
 
-.round__body { padding-top: var(--s6); gap: 0; }
-.round__info, .round__reveal { display: grid; gap: var(--s2); }
+.round__body { padding-top: var(--s6); padding-bottom: var(--s8); gap: 0; }
+.round__info { display: grid; gap: 0; }
+.round__reveal { display: grid; gap: var(--s2); }
 .round__reveal > * { animation: reveal-in var(--dur-reveal) var(--ease) both; }
 .round__reveal > :nth-child(2) { animation-delay: 60ms; }
 .round__reveal > :nth-child(3) { animation-delay: 120ms; }
 .round__reveal > :nth-child(4) { animation-delay: 180ms; }
-.round__product { font-size: 16px; font-weight: 500; color: var(--text); }
-.round__info [data-category] { margin-top: var(--s2); }
+.round__product { font-size: 17px; font-weight: 500; line-height: 1.35; color: var(--text); margin-top: var(--s2); }
+.round__info [data-description] { margin-top: var(--s4); }
+.round__info [data-category] { margin-top: var(--s6); }
 
 .verdict { display: inline-flex; align-items: center; gap: var(--s2); }
 .verdict .icon { width: 16px; height: 16px; }
@@ -368,4 +373,11 @@ html[data-preview] .app::-webkit-scrollbar { width: 0; }
   .bar__fill { animation: none; }
   .btn:active { transform: none; }
   @keyframes fade-only { from { opacity: 0; } to { opacity: 1; } }
+}
+
+/* Schermi bassi (es. iPhone SE): ritmo del round più compatto */
+@media (max-height: 640px) {
+  .round__body { padding-bottom: var(--s4); }
+  .round__info [data-description] { margin-top: var(--s3); }
+  .round__info [data-category] { margin-top: var(--s4); }
 }
