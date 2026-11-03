@@ -90,6 +90,14 @@
     .pawn { position: absolute; left: 0; top: 0; height: var(--pawn-h, 52px); transform-origin: 50% 100%; will-change: transform; pointer-events: none; }
     .pawn img { height: 100%; width: auto; display: block; filter: drop-shadow(0 6px 6px rgba(0,0,0,.55)); }
     .pawn.is-in { animation: drop 600ms var(--ease); }
+    /* Nome del giocatore accanto alla pedina, legato da un filo sottile */
+    .pawn__tag { position: absolute; top: calc(34% + var(--tag-dy, 0px)); left: 100%; margin-left: 12px; padding: 4px 8px; border-radius: 999px; white-space: nowrap;
+      background: rgba(8, 11, 11, .86); border: 1px solid var(--line); color: var(--text); font: 600 10px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; }
+    .pawn__tag::before { content: ""; position: absolute; top: 50%; right: 100%; width: 12px; height: 1px; background: rgba(243, 239, 231, .55); }
+    .pawn--l .pawn__tag { left: auto; right: 100%; margin: 0 12px 0 0; }
+    .pawn--l .pawn__tag::before { right: auto; left: 100%; }
+    .pawn--u .pawn__tag { top: auto; bottom: 100%; left: 50%; margin: 0 0 10px; transform: translateX(-50%); }
+    .pawn--u .pawn__tag::before { top: 100%; right: auto; left: 50%; width: 1px; height: 10px; }
     @keyframes drop { from { opacity: 0; translate: 0 -24px; } to { opacity: 1; translate: 0 0; } }
 
     .board { border: 1px solid var(--line); border-radius: 16px; background: rgba(13,16,15,.88); display: grid; grid-template-columns: 1fr auto; }
@@ -134,13 +142,14 @@
     .cd.is-pop { animation: pop 900ms var(--ease) both; }
 
     .reveal { position: relative; height: 100%; max-height: 100%; aspect-ratio: 4 / 3; max-width: 100%; border-radius: 16px; overflow: hidden; background: var(--surface); border: 1px solid var(--line); }
-    .reveal img { width: 100%; height: 100%; object-fit: cover; display: block; object-position: var(--focus, 50% 50%); transform-origin: var(--focus, 50% 50%);
+    .reveal img { width: 100%; height: 100%; object-fit: cover; display: block; will-change: transform, filter; backface-visibility: hidden; object-position: var(--focus, 50% 50%); transform-origin: var(--focus, 50% 50%);
       transform: scale(var(--zoom, 1)); filter: blur(var(--blur, 0px)); transition: transform 1400ms var(--ease), filter 700ms var(--ease); }
-    .reveal__tag { position: absolute; left: 50%; bottom: clamp(14px, 3vh, 28px); transform: translateX(-50%); display: grid; justify-items: center; gap: 6px;
-      padding: clamp(10px, 1.6vh, 16px) clamp(22px, 2.4vw, 40px); border-radius: 16px; background: rgba(8, 11, 11, .82); border: 1px solid var(--line); white-space: nowrap;
-      animation: reveal-in 500ms var(--ease) 500ms both; }
+    .reveal__tag { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 8px; max-width: 86%; text-align: center;
+      padding: clamp(14px, 2.2vh, 24px) clamp(24px, 2.8vw, 48px); border-radius: 18px; background: rgba(8, 11, 11, .82); border: 1px solid var(--line);
+      animation: tag-in 600ms var(--ease) 700ms both; }
+    @keyframes tag-in { from { opacity: 0; transform: translate(-50%, -50%) scale(.94); } to { opacity: 1; transform: translate(-50%, -50%); } }
     .reveal__tag .t-meta { color: var(--text-muted); letter-spacing: .24em; }
-    .reveal__brand { font-family: var(--serif); font-size: clamp(30px, min(3.2vw, 6vh), 60px); line-height: 1; }
+    .reveal__brand { font-family: var(--serif); font-size: clamp(34px, min(4vw, 8vh), 76px); line-height: 1.05; text-wrap: balance; overflow-wrap: anywhere; }
 
     .standings { list-style: none; margin: 0; padding: 0; width: min(100%, 720px); display: grid; gap: clamp(6px, 1.2vh, 12px); }
     .standings li { display: grid; grid-template-columns: 56px 64px 1fr auto auto; align-items: center; gap: var(--s4); height: clamp(52px, 9vh, 84px);
@@ -290,6 +299,7 @@
 
     var gameId = null, game = null, players = [], unwatch = null;
     var phase = "boot", running = false, boardRound = 0;
+    var finishAt = TOTAL * 100;                             // punti che valgono il traguardo: 1000, nella corsa finale quelli del primo
     var view = {};                                          // per giocatore: pedina e punteggio mostrato
     var bots = [];                                          // giocatori simulati: { id, secret, skill }
 
@@ -336,7 +346,7 @@
         li.querySelector("img").alt = CHARS[p.avatar] + ", scelto da " + p.nickname;
         setTimeout(function () { li.classList.remove("is-new"); }, 1000);
         var pawn = document.createElement("div");
-        pawn.className = "pawn is-in"; pawn.innerHTML = '<img src="' + IMG(p.avatar) + '" alt="">';
+        pawn.className = "pawn is-in"; pawn.innerHTML = '<img src="' + IMG(p.avatar) + '" alt=""><span class="pawn__tag">' + esc(p.nickname) + "</span>";
         pawnsEl.appendChild(pawn);
         view[p.id] = { el: pawn, score: p.total_score, ms: p.total_ms, shown: Math.min(1, p.total_score / (TOTAL * 100)), lane: 0, laneCount: 1 };
         placeAll(false);
@@ -394,7 +404,13 @@
       var scale = svg.getScreenCTM().a;
       document.documentElement.style.setProperty("--pawn-h", Math.round(Math.max(30, Math.min(60, 46 * scale))) + "px");
       Object.keys(groups).forEach(function (k) {
-        groups[k].sort(function (a, b) { return a.ms - b.ms; }).forEach(function (v, i, g) { v.lane = i; v.laneCount = g.length; });
+        groups[k].sort(function (a, b) { return a.ms - b.ms; }).forEach(function (v, i, g) {
+          v.lane = i; v.laneCount = g.length;
+          var row = Math.floor(i / 3), col = i % 3, cols = Math.min(3, g.length - row * 3), mid = (cols - 1) / 2;
+          var side = cols === 1 ? "r" : col < mid ? "l" : col > mid ? "r" : row ? "r" : "u";   // etichette verso l'esterno del gruppo
+          v.el.style.setProperty("--tag-dy", row * 22 + (side === "r" && col === mid && row ? 11 : 0) + "px");   // file dietro: etichette più in basso
+          v.el.classList.remove("pawn--l", "pawn--r", "pawn--u"); v.el.classList.add("pawn--" + side);
+        });
       });
       return new Promise(function (done) {
         var t0 = performance.now(), d = dur || 1100, from = {};
@@ -403,7 +419,7 @@
           var t = !animate || REDUCED ? 1 : Math.min(1, (now - t0) / d), e = t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
           ids.forEach(function (id) {
             var v = view[id]; if (!v) return;
-            var target = Math.min(1, v.score / (TOTAL * 100));
+            var target = Math.min(1, v.score / finishAt);
             v.shown = from[id] + (target - from[id]) * e; draw(v);
           });
           if (t < 1) requestAnimationFrame(step); else done();
@@ -414,6 +430,11 @@
       var s = toScreen(pointAt(v.shown, v.lane || 0, v.laneCount || 1));
       v.el.style.transform = "translate(" + s.x + "px," + s.y + "px) translate(-50%, -88%)";
       v.el.style.zIndex = Math.round(s.y);
+    }
+    /* Corsa finale: il primo taglia il traguardo, gli altri in proporzione ai suoi punti */
+    function finishLeader() {
+      var top = Object.keys(view).reduce(function (m, id) { return Math.max(m, view[id].score); }, 0);
+      if (top > 0) finishAt = top;
     }
     /* I punteggi passano alle pedine e alla classifica solo qui, dopo il reveal */
     function takeScores() {
@@ -555,14 +576,14 @@
         setPhase("final"); showView("chars");
         head("Round " + TOTAL + " / " + TOTAL, "Corsa finale", "Si va al traguardo");
         status("Corsa finale", false);
-        takeScores();
+        takeScores(); finishLeader();
         return Promise.all([placeAll(true, T.final), wait(T.final + 300)]);
       }).then(function () { return host("podium", TOTAL); }).then(podium);
     }
 
     function podium() {
       setPhase("podium"); running = false;
-      boardRound = TOTAL; takeScores(); placeAll(false); renderBoard();
+      boardRound = TOTAL; takeScores(); finishLeader(); placeAll(false); renderBoard();
       head("Gara finita", "Zoom Race", "");
       status("Gara finita", false);
       var r = NET.rank(players), order = [1, 0, 2];
@@ -595,7 +616,7 @@
     /* ---------- Avvio ---------- */
     function attach(id) {
       if (unwatch) unwatch();
-      gameId = id; players = []; bots = []; boardRound = 0;
+      gameId = id; players = []; bots = []; boardRound = 0; finishAt = TOTAL * 100;
       Object.keys(view).forEach(function (k) { view[k].el.remove(); delete view[k]; });
       resetChars(); renderBoard();
       unwatch = NET.watch(id, onSnap);
