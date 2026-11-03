@@ -32,12 +32,12 @@
     /* Riempimento che cresce dal centro verso il lato scelto */
     .slide__fill {
       position: absolute; top: 0; bottom: 0; left: 50%; width: 50%;
-      background: linear-gradient(to right, rgba(243, 239, 231, 0.04), rgba(243, 239, 231, 0.22));
+      background: linear-gradient(to right, rgba(151, 197, 158, 0.06), rgba(151, 197, 158, 0.38));
       transform-origin: left center; transform: scaleX(max(var(--x), 0));
     }
     .slide__fill--no {
       left: 0; transform-origin: right center; transform: scaleX(max(calc(var(--x) * -1), 0));
-      background: linear-gradient(to left, rgba(243, 239, 231, 0.04), rgba(243, 239, 231, 0.22));
+      background: linear-gradient(to left, rgba(199, 142, 120, 0.06), rgba(199, 142, 120, 0.38));
     }
     .slide__label {
       position: absolute; top: 0; bottom: 0; display: flex; align-items: center; gap: var(--s2);
@@ -46,12 +46,13 @@
       transition: opacity var(--dur-press) var(--ease);
     }
     .slide__label svg { width: 16px; height: 16px; flex: none; opacity: 0.7; }
-    .slide__label--no { left: 0; opacity: calc(1 - max(var(--x), 0) * 1.4); }
+    .slide__label--no { left: 0; color: var(--wrong); opacity: calc(1 - max(var(--x), 0) * 1.4); }
     .slide__label--no svg { transform: scaleX(-1); }
-    .slide__label--yes { right: 0; padding: 0 18px 0 var(--s4); opacity: calc(1 + min(var(--x), 0) * 1.4); }
+    .slide__label--yes { right: 0; color: var(--correct); padding: 0 18px 0 var(--s4); opacity: calc(1 + min(var(--x), 0) * 1.4); }
     .slide__knob {
       position: absolute; top: 50%; left: 50%; width: var(--knob); height: var(--knob); margin: calc(var(--knob) / -2) 0 0 calc(var(--knob) / -2);
-      border-radius: 50%; border: 0; background: var(--text); color: var(--bg);
+      border-radius: 50%; border: 0; color: var(--bg);
+      background: var(--knob-bg, var(--text));
       display: grid; place-items: center; cursor: grab;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
       transform: translateX(calc(var(--x) * var(--travel, 120px))) scale(var(--press, 1));
@@ -140,7 +141,12 @@
     var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     function travel() { return (slide.clientWidth - 60) / 2; }   // corsa del cursore da centro a bordo
-    function setX(v) { x = Math.max(-1, Math.min(1, v)); slide.style.setProperty("--x", x); }
+    function setX(v) {
+      x = Math.max(-1, Math.min(1, v)); slide.style.setProperty("--x", x);
+      // il cursore prende una leggera tinta del lato verso cui va
+      var t = Math.min(1, Math.abs(x)) * 0.55, c = x >= 0 ? [151, 197, 158] : [199, 142, 120], b = [243, 239, 231];
+      knob.style.setProperty("--knob-bg", "rgb(" + b.map(function (v, k) { return Math.round(v + (c[k] - v) * t); }).join(",") + ")");
+    }
     function settle(fn) {
       slide.classList.add("is-settling");
       fn();
