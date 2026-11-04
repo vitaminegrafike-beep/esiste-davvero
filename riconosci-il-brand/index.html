@@ -159,7 +159,7 @@
 
     <figure class="media" data-media>
       <img data-img src="" alt="" draggable="false" class="is-hidden">
-      <div class="countdown" data-countdown><span class="countdown__n">3</span></div>
+      <div class="countdown" data-countdown><span class="countdown__n">5</span></div>
     </figure>
     <div class="timebar" aria-hidden="true"><span data-timebar></span></div>
 
@@ -414,7 +414,7 @@
       var el = NET.now() - game.phase_ms;
       play.setAttribute("data-phase", game.state);
       if (game.state === "countdown") {
-        var n = Math.max(1, Math.min(3, 3 - Math.floor(el / 1000)));
+        var n = Math.max(1, Math.min(5, 5 - Math.floor(el / 1000)));
         cd.hidden = false;
         if (n !== lastCd) { lastCd = n; cd.innerHTML = '<span class="countdown__n' + (reduce ? "" : " is-pop") + '">' + n + "</span>"; }
       } else {
