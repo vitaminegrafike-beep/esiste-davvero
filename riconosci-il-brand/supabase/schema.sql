@@ -24,7 +24,7 @@ create table if not exists zr_games (
   round      int    not null default 0 check (round between 0 and 50),
   phase_ms   bigint not null default zr_ms(),     -- inizio della fase corrente
   ends_ms    bigint,                              -- fine del round (solo in fase 'round')
-  round_ms   int    not null default 9000         -- durata del round
+  round_ms   int    not null default 12000        -- durata del round
 );
 
 create table if not exists zr_hosts (             -- token della regia: mai leggibile dal browser
@@ -46,6 +46,7 @@ create table if not exists zr_players (
   unique (game_id, avatar)
 );
 create index if not exists zr_players_game on zr_players(game_id);
+alter table zr_games alter column round_ms set default 12000;   -- round da 12 s (anche su database già creati)
 
 create table if not exists zr_secrets (           -- segreto del giocatore: mai leggibile dal browser
   player_id uuid primary key references zr_players(id) on delete cascade,
@@ -142,7 +143,7 @@ end $$;
 
 -- Cambio di fase (solo regia, con token).
 -- 'reveal' chiude il round: calcola i punti con la risposta giusta passata dalla regia.
--- Punti: esatta = round(100 - ms/9000*70), da 100 a 30; errata o mancante = 0.
+-- Punti: esatta = round(100 - ms/durata*70), da 100 a 30; errata o mancante = 0.
 create or replace function zr_host(p_game uuid, p_token uuid, p_state text, p_round int, p_correct int default null) returns json
 language plpgsql security definer set search_path = public as $$
 declare g zr_games; t bigint := zr_ms();

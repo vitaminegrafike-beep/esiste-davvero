@@ -23,7 +23,7 @@ window.ZR_ROUNDS = [
 ];
 
 /* Durata del round e sfocatura nel tempo (px): un passo ogni 1,5 s, interpolato in modo continuo sui 9 secondi */
-window.ZR_ROUND_MS = 9000;
+window.ZR_ROUND_MS = 12000;
 window.ZR_BLUR_STEPS = [45, 34, 25, 17, 10, 5, 2];
 
 /* Punti per una risposta esatta, continui in base al tempo (millisecondi): da 100 a 30.

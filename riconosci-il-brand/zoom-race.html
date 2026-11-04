@@ -21,7 +21,7 @@
     }
     html, body { height: 100%; }
     body { overflow: hidden; }
-    .race-app { display: grid; grid-template-columns: minmax(280px, 24%) minmax(0, 1fr) minmax(320px, 31%); grid-template-rows: minmax(0, 1fr); height: 100vh; }
+    .race-app { display: grid; grid-template-columns: minmax(270px, 22%) minmax(0, 1fr) minmax(340px, 37%); grid-template-rows: minmax(0, 1fr); height: 100vh; }
     .t-meta { letter-spacing: 0.22em; }
 
     /* ---------- Sinistra ---------- */
@@ -44,7 +44,7 @@
     .qrcard p { text-align: center; color: var(--text-muted); font-size: 11px; line-height: 1.8; }
     .intro__foot { display: grid; gap: var(--s2); }
     .intro__foot .proto { color: var(--accent); font-size: 12px; }
-    .restart { justify-self: start; margin-top: var(--s2); padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--text-muted); font: inherit; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer; transition: color .2s, border-color .2s, background .2s; }
+    .restart { position: fixed; top: clamp(14px, 2.4vh, 26px); right: var(--pad); z-index: 50; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--text-muted); font: inherit; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer; transition: color .2s, border-color .2s, background .2s; }
     .restart:hover, .restart:focus-visible { color: var(--text); border-color: var(--text-muted); }
     .restart.is-armed { color: #080B0B; background: #C78E78; border-color: #C78E78; }
 
@@ -103,20 +103,6 @@
     .pawn--u .pawn__tag::before { top: 100%; right: auto; left: 50%; width: 1px; height: 10px; }
     @keyframes drop { from { opacity: 0; translate: 0 -24px; } to { opacity: 1; translate: 0 0; } }
 
-    .board { border: 1px solid var(--line); border-radius: 16px; background: rgba(13,16,15,.88); display: grid; grid-template-columns: 1fr auto; }
-    .board__main { padding: var(--s4) var(--s6); min-width: 0; }
-    .board__head { display: flex; justify-content: space-between; gap: var(--s4); color: var(--text-muted); padding-bottom: var(--s3); border-bottom: 1px solid var(--line); }
-    .board__head [data-round] { color: var(--text); font-variant-numeric: tabular-nums; }
-    .board ol { list-style: none; margin: 0; padding: 0; }
-    .board li { display: grid; grid-template-columns: 22px 28px 1fr auto; align-items: center; gap: var(--s3); height: clamp(30px, 4.4vh, 40px); border-bottom: 1px solid var(--line); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
-    .board li:last-child { border-bottom: 0; }
-    .board li img { height: 26px; width: auto; justify-self: center; }
-    .board li .n { color: var(--text-muted); font-variant-numeric: tabular-nums; }
-    .board li .pts { font-variant-numeric: tabular-nums; color: var(--text-muted); }
-    .board li .who { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-    .board__empty { color: var(--text-muted); font-size: 14px; padding: var(--s4) 0 var(--s2); }
-    .board__motto { border-left: 1px solid var(--line); padding: var(--s6); display: flex; flex-direction: column; justify-content: center; gap: var(--s4); color: var(--text-muted); font-size: 12px; font-weight: 500; letter-spacing: .24em; line-height: 1.9; text-transform: uppercase; }
-    .board__motto hr { width: 32px; height: 1px; border: 0; background: var(--text-muted); margin: 0; }
 
     /* ---------- Sovrapposizioni ---------- */
     .overlay { position: fixed; inset: 0; z-index: 5000; display: grid; place-items: center; background: rgba(8,11,11,.82); text-align: center; }
@@ -143,6 +129,19 @@
 
     .cd { font-family: var(--serif); font-size: clamp(140px, min(16vw, 30vh), 280px); line-height: 1; }
     .cd.is-pop { animation: pop 900ms var(--ease) both; }
+    /* "Guarda il telefono": countdown e round */
+    .look { display: grid; justify-items: center; align-content: center; gap: clamp(14px, 2.6vh, 28px); text-align: center; }
+    .look__phone { width: clamp(64px, 9vh, 104px); aspect-ratio: 48 / 80; color: var(--text); }
+    .look__phone.is-buzz { animation: buzz 2.4s var(--ease) infinite; }
+    @keyframes buzz { 0%, 70%, 100% { transform: rotate(0); } 74% { transform: rotate(-7deg); } 78% { transform: rotate(7deg); } 82% { transform: rotate(-5deg); } 86% { transform: rotate(4deg); } 90% { transform: rotate(0); } }
+    .look__sub { margin: calc(-1 * clamp(6px, 1.4vh, 16px)) 0 0; color: var(--text-muted); }
+    .look__big { font-family: var(--serif); font-size: clamp(48px, min(5.2vw, 9vh), 96px); line-height: 1.02; margin: 0; }
+    .look__who { list-style: none; margin: clamp(6px, 1.6vh, 18px) 0 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(8px, 1vw, 16px); max-width: 640px; }
+    .look__who li { height: clamp(48px, 7vh, 76px); display: flex; align-items: flex-end; transition: transform .35s var(--ease); }
+    .look__who img { height: 100%; width: auto; display: block; opacity: .22; filter: grayscale(1); transition: opacity .35s, filter .35s; }
+    .look__who li.is-answered { transform: translateY(-6px); }
+    .look__who li.is-answered img { opacity: 1; filter: drop-shadow(0 0 12px rgba(255, 233, 184, .6)); }
+    @media (prefers-reduced-motion: reduce) { .look__phone.is-buzz { animation: none; } }
 
     .reveal { position: relative; height: 100%; max-height: 100%; aspect-ratio: 4 / 3; max-width: 100%; border-radius: 16px; overflow: hidden; background: var(--surface); border: 1px solid var(--line); }
     .reveal img { width: 100%; height: 100%; object-fit: cover; display: block; will-change: transform, filter; backface-visibility: hidden; object-position: var(--focus, 50% 50%); transform-origin: var(--focus, 50% 50%);
@@ -185,13 +184,14 @@
     .podium__steps { border-bottom: 1px solid var(--line); }
 
     @media (max-width: 1500px) { .board__motto { display: none; } }
-    @media (max-height: 800px) { .board li { height: 28px; } .board__main { padding: var(--s3) var(--s4); } .race { gap: var(--s2); } }
+    @media (max-height: 800px) { .race { gap: var(--s2); } }
     @media (max-height: 760px) { .how { display: none; } .intro__claim { line-height: 1.7; } }
     @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 3s; } .char.is-new img, .pawn.is-in, .overlay__n { animation: none; } }
   </style>
 </head>
 <body>
   <svg width="0" height="0" class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-phone" viewBox="0 0 48 80"><rect x="2" y="2" width="44" height="76" rx="9" fill="none" stroke="currentColor" stroke-width="2.5"/><rect x="17" y="7" width="14" height="3" rx="1.5" fill="currentColor"/><rect x="8" y="16" width="32" height="40" rx="3" fill="currentColor" opacity=".18"/><rect x="8" y="60" width="32" height="5" rx="2.5" fill="currentColor" opacity=".55"/><rect x="8" y="68" width="32" height="5" rx="2.5" fill="currentColor" opacity=".35"/></symbol>
     <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   </svg>
 
@@ -224,7 +224,17 @@
         <h2 id="lobby-title" data-lobby-title>Scegli il tuo personaggio</h2>
         <p class="t-meta lobby__sub" data-lobby-sub>Scansiona il QR code e unisciti alla gara</p>
         <ul class="chars" data-chars role="list" style="list-style:none;padding:0"></ul>
-        <div class="view" data-view="countdown" hidden><span class="cd" data-cd>3</span></div>
+        <div class="view" data-view="countdown" hidden>
+          <div class="look"><svg class="look__phone" aria-hidden="true"><use href="#i-phone"/></svg><span class="cd" data-cd>5</span></div>
+        </div>
+        <div class="view" data-view="answering" hidden>
+          <div class="look">
+            <svg class="look__phone is-buzz" aria-hidden="true"><use href="#i-phone"/></svg>
+            <p class="look__big">Gioca sul telefono</p>
+            <p class="t-meta look__sub">Chi lo riconoscerà per primo?</p>
+            <ul class="look__who" data-answers></ul>
+          </div>
+        </div>
         <div class="view" data-view="reveal" hidden>
           <figure class="reveal" data-reveal><img data-reveal-img src="" alt=""><figcaption class="reveal__tag"><span class="t-meta">Risposta</span><span class="reveal__brand" data-reveal-brand></span></figcaption></figure>
         </div>
@@ -258,14 +268,6 @@
         </svg>
         <div data-pawns></div>
       </div>
-      <div class="board">
-        <div class="board__main">
-          <div class="board__head t-meta"><span>Classifica</span><span>Round <span data-round>0</span> / <span data-total>10</span></span></div>
-          <ol data-board></ol>
-          <p class="board__empty" data-board-empty>La classifica parte con il primo round.</p>
-        </div>
-        <div class="board__motto"><span>Piccoli<br>dettagli.<br>Grandi<br>brand.</span><hr></div>
-      </div>
     </section>
   </div>
 
@@ -278,7 +280,7 @@
     /* Regia: fa da direttore della partita. Scrive le fasi sul server (o, in modalità prova, è il server),
        mostra lobby, round, reveal, corsa, classifica e podio. Le pedine si muovono solo dopo il reveal. */
     var NET = window.ZRNet, ROUNDS = window.ZR_ROUNDS, TOTAL = ROUNDS.length, MAX = 16;
-    var T = { countdown: 3000, grace: 600, reveal: 3200, race: 2600, standings: 3800, final: 4200 };
+    var T = { countdown: 5000, grace: 600, reveal: 3200, race: 2600, standings: 3800, final: 4200 };
     var CHARS = ["Astro","Neko","Dino","Bot","Ducky","Bubu","Lapin","Panda","Pixel","Fungo","Ghost","Cool","Espresso","Cactus","Pingu","Luna"];
     var IMG = function (i) { return "assets/personaggi/" + String(i + 1).padStart(2, "0") + "-" + CHARS[i].toLowerCase() + ".webp"; };
     var DEMO_NAMES = ["Giulia","Marco","Sara","Davide","Chiara","Luca","Francesca","Andrea","Elisa","Matteo","Bianca","Nadia","Paolo","Irene","Tommaso","Greta"];
@@ -306,7 +308,6 @@
     var view = {};                                          // per giocatore: pedina e punteggio mostrato
     var bots = [];                                          // giocatori simulati: { id, secret, skill }
 
-    $("[data-total]").textContent = TOTAL;
     $("[data-mode-note]").textContent = NET.mode === "local" ? "Modalità prova · giocatori simulati" : (BOTS ? "Gara dal vivo · con " + BOTS + " giocatori simulati" : "");
 
     /* Griglia dei 16 personaggi, tutti spenti */
@@ -318,7 +319,10 @@
 
     function wait(ms) { return new Promise(function (res) { setTimeout(res, ms); }); }
     function setText(sel, t) { $(sel).textContent = t; }
-    function head(eyebrow, title, sub) { setText("[data-lobby-eyebrow]", eyebrow); setText("[data-lobby-title]", title); setText("[data-lobby-sub]", sub || ""); }
+    function head(eyebrow, title, sub) {
+      setText("[data-lobby-eyebrow]", eyebrow); setText("[data-lobby-title]", title || ""); setText("[data-lobby-sub]", sub || "");
+      $("[data-lobby-title]").hidden = !title; $("[data-lobby-sub]").hidden = !sub;
+    }
     function showView(name) {
       charsEl.hidden = name !== "chars";
       Array.prototype.forEach.call(document.querySelectorAll("[data-view]"), function (v) { v.hidden = v.getAttribute("data-view") !== name; });
@@ -447,15 +451,7 @@
     }
 
     /* ---------- Classifica ---------- */
-    function renderBoard() {
-      setText("[data-round]", boardRound);
-      $("[data-board-empty]").hidden = boardRound > 0;
-      var list = NET.rank(players).slice(0, 5);
-      $("[data-board]").innerHTML = boardRound === 0 ? "" : list.map(function (p, i) {
-        return '<li><span class="n">' + (i + 1) + '</span><img src="' + IMG(p.avatar) + '" alt=""><span class="who">' + esc(p.nickname) +
-          ' <span class="muted">· ' + CHARS[p.avatar] + '</span></span><span class="pts">' + p.total_score + " pt</span></li>";
-      }).join("");
-    }
+    function renderBoard() {}                       // la classifica ora si vede solo al centro, dopo ogni round
     function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
 
     /* ---------- Giocatori simulati ---------- */
@@ -477,7 +473,7 @@
     function botsAnswer(n) {
       var correct = ROUNDS[n - 1].correct;
       bots.forEach(function (b) {
-        var ms = Math.min(game.round_ms - 300, 700 + Math.random() * 8000 * (1.15 - b.skill));
+        var ms = Math.min(game.round_ms - 300, 700 + Math.random() * (game.round_ms - 1000) * (1.15 - b.skill));
         if (Math.random() < 0.06) return;                 // ogni tanto qualcuno non risponde
         var ok = Math.random() < b.skill, choice = ok ? correct : (correct + 1 + Math.floor(Math.random() * 2)) % 3;
         setTimeout(function () { NET.answer(b.id, b.secret, n, choice).catch(function () {}); }, ms);
@@ -494,15 +490,17 @@
       var n = game.round;
       players.forEach(function (p) {
         charsEl.querySelector('[data-char="' + p.avatar + '"]').classList.toggle("is-answered", p.answered_round >= n);
+        var w = document.querySelector('[data-answers] [data-who="' + p.id + '"]');
+        if (w) w.classList.toggle("is-answered", p.answered_round >= n);
       });
       status('<span class="bar__count">' + answeredCount(n) + "/" + players.length + "</span> hanno risposto", answeredCount(n) < players.length);
     }
 
     function countdownView(n) {
       setPhase("countdown"); showView("countdown");
-      head("Round " + n + " / " + TOTAL, "Pronti?", "Occhi sul telefono");
+      head("Round " + n + " / " + TOTAL, "Guarda il telefono", "Il prossimo brand sta per arrivare");
       status("Round " + n + " di " + TOTAL, false);
-      var el = $("[data-cd]"), k = 3;
+      var el = $("[data-cd]"), k = 5;
       return new Promise(function (done) {
         (function step() {
           if (k === 0) { done(); return; }
@@ -517,9 +515,11 @@
       return host("countdown", n).then(function () { return countdownView(n); })
         .then(function () { return host("round", n); })
         .then(function (g) {
-          setPhase("round"); showView("chars");
-          head("Round " + n + " / " + TOTAL, "Chi lo riconoscerà per primo?", "Rispondete dal telefono");
-          Array.prototype.forEach.call(charsEl.children, function (li) { li.classList.remove("is-answered"); });
+          setPhase("round"); showView("answering");
+          head("Round " + n + " / " + TOTAL, "", "");
+          $("[data-answers]").innerHTML = players.map(function (p) {
+            return '<li data-who="' + p.id + '" title="' + esc(p.nickname) + '"><img src="' + IMG(p.avatar) + '" alt="' + esc(p.nickname) + '"></li>';
+          }).join("");
           updateAnswered();
           botsAnswer(n);
           return new Promise(function (done) {        // si chiude quando hanno risposto tutti o allo scadere
