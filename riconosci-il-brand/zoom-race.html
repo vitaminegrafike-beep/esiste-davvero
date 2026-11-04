@@ -44,6 +44,9 @@
     .qrcard p { text-align: center; color: var(--text-muted); font-size: 11px; line-height: 1.8; }
     .intro__foot { display: grid; gap: var(--s2); }
     .intro__foot .proto { color: var(--accent); font-size: 12px; }
+    .restart { justify-self: start; margin-top: var(--s2); padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--text-muted); font: inherit; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer; transition: color .2s, border-color .2s, background .2s; }
+    .restart:hover, .restart:focus-visible { color: var(--text); border-color: var(--text-muted); }
+    .restart.is-armed { color: #080B0B; background: #C78E78; border-color: #C78E78; }
 
     /* ---------- Centro ---------- */
     .lobby { padding: var(--pad) clamp(16px, 1.4vw, 28px); min-height: 0; display: flex; }
@@ -210,6 +213,7 @@
       <div class="intro__foot">
         <p class="t-meta muted">Dettagli. Istinto. Velocità.</p>
         <p class="proto" data-mode-note></p>
+        <button type="button" class="restart" data-restart>Ricomincia da zero</button>
       </div>
     </section>
 
@@ -640,6 +644,20 @@
         if (g.state === "podium") podium();
       });
     }
+
+    /* Ricomincia: chiude la gara in corso (i telefoni cercano da soli la nuova) e riparte dalla lobby.
+       Primo clic arma il pulsante, il secondo entro 4 s conferma. */
+    var restartBtn = $("[data-restart]"), armed = null;
+    restartBtn.addEventListener("click", function () {
+      if (!armed) {
+        restartBtn.classList.add("is-armed"); restartBtn.textContent = "Sicuro? Clicca di nuovo";
+        armed = setTimeout(function () { armed = null; restartBtn.classList.remove("is-armed"); restartBtn.textContent = "Ricomincia da zero"; }, 4000);
+        return;
+      }
+      clearTimeout(armed); restartBtn.disabled = true; restartBtn.textContent = "Ricomincio…";
+      var close = gameId ? NET.host(gameId, "closed", 0) : Promise.resolve();
+      close.catch(function () {}).then(function () { NET.store("host", null); location.reload(); });
+    });
 
     NET.ready().then(function () { return NET.resumeHost(); })
       .then(function (g) { return g ? resume(g) : newGame(); })

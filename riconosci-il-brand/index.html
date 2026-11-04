@@ -259,8 +259,8 @@
       var p = mine();
       if (game.state === "closed") {
         if (me && me.gameId === game.id) { NET.store("player", null); me = null; }
-        msg({ eyebrow: "Zoom Race", title: "Partita chiusa", text: "La regia ha chiuso questa gara.",
-              button: "Cerca una nuova gara", onButton: enter });
+        msg({ eyebrow: "Zoom Race", title: "Si ricomincia", text: "La regia ha chiuso questa gara. Cerco la nuova…", spinner: true });
+        clearTimeout(searching); searching = setTimeout(enter, 2500);
         return;
       }
       if (!p) {
