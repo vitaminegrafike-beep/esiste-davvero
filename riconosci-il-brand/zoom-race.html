@@ -151,7 +151,7 @@
       animation: tag-in 600ms var(--ease) 700ms both; }
     @keyframes tag-in { from { opacity: 0; transform: translate(-50%, -50%) scale(.94); } to { opacity: 1; transform: translate(-50%, -50%); } }
     .reveal__tag .t-meta { color: var(--text-muted); letter-spacing: .24em; }
-    .reveal__brand { font-family: var(--serif); font-size: clamp(34px, min(4vw, 8vh), 76px); line-height: 1.05; text-wrap: balance; overflow-wrap: anywhere; }
+    .reveal__brand { font-family: var(--serif); font-size: clamp(34px, min(4vw, 8vh), 76px); line-height: 1.05; text-wrap: balance; overflow-wrap: normal; word-break: keep-all; hyphens: none; }   /* a capo solo tra parole intere */
 
     .standings { list-style: none; margin: 0; padding: 0; width: min(100%, 720px); display: grid; gap: clamp(6px, 1.2vh, 12px); }
     .standings li { display: grid; grid-template-columns: 56px 64px 1fr auto auto; align-items: center; gap: var(--s4); height: clamp(52px, 9vh, 84px);
@@ -549,10 +549,20 @@
       im.src = r.image; im.alt = r.alt || "";
       setText("[data-reveal-brand]", r.options[r.correct]);
       showView("reveal");
+      fitBrand();
       void im.offsetWidth; im.style.transition = "";
       requestAnimationFrame(function () { fig.style.setProperty("--zoom", 1); fig.style.setProperty("--blur", "0px"); });
       return wait(T.reveal);
     }
+
+    /* Il nome del brand non si spezza mai: se una parola non entra, il testo si rimpicciolisce */
+    function fitBrand() {
+      var el = $("[data-reveal-brand]"), tag = el.parentNode;
+      el.style.fontSize = "";
+      var size = parseFloat(getComputedStyle(el).fontSize);
+      while (size > 16 && (el.scrollWidth > tag.clientWidth + 1 || tag.scrollWidth > tag.clientWidth + 1)) { size -= 2; el.style.fontSize = size + "px"; }
+    }
+    window.addEventListener("resize", function () { if (phase === "reveal") fitBrand(); });
 
     function race(n) {
       setPhase("race");
