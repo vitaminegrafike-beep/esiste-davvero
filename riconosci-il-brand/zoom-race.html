@@ -33,16 +33,17 @@
     }
     .brandmark { font-family: var(--serif); font-weight: 400; font-size: clamp(56px, min(6.4vw, 13vh), 132px); line-height: .86; letter-spacing: -0.01em; text-transform: uppercase; }
     .brandmark em { font-style: italic; display: block; }
-    .intro__claim { color: var(--text); line-height: 1.9; max-width: 22ch; }
+    .intro__claim { color: var(--text); line-height: 1.9; white-space: nowrap; letter-spacing: .1em; font-size: clamp(10px, .7vw, 13px); }
     .rule { width: 48px; height: 1px; background: var(--text-muted); border: 0; margin: 0; }
     .how { list-style: none; margin: 0; padding: 0; display: grid; gap: clamp(10px, 1.8vh, 18px); }
-    .how li { display: grid; grid-template-columns: 40px 1fr; gap: var(--s4); align-items: center; font-size: clamp(14px, 1vw, 17px); line-height: 1.35; }
+    .how li { display: grid; grid-template-columns: 40px 1fr; gap: var(--s4); align-items: center; font-size: clamp(15px, 1.05vw, 18px); line-height: 1.35; white-space: nowrap; }
     .how b { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-weight: 400; font-size: 17px; background: var(--surface-2); border: 1px solid var(--line); font-variant-numeric: tabular-nums; }
-    .qrcard { margin-top: auto; display: grid; justify-items: center; gap: var(--s4); padding: clamp(14px, 2.4vh, 24px); border: 1px solid var(--line); border-radius: var(--r-card); background: rgba(8,11,11,.7); }
-    .qr { width: clamp(110px, min(10vw, 19vh), 190px); aspect-ratio: 1; border-radius: 10px; overflow: hidden; background: var(--text); }
+    .qrcard { margin-top: auto; display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; gap: var(--s4); padding: clamp(14px, 2.4vh, 24px); border: 1px solid var(--line); border-radius: var(--r-card); background: rgba(8,11,11,.7); }
+    .qr { width: clamp(130px, min(12.5vw, 21vh), 240px); aspect-ratio: 1; border-radius: 10px; overflow: hidden; background: var(--text); }
     .qr__svg { width: 100%; height: 100%; display: block; }
-    .qrcard p { text-align: center; color: var(--text-muted); font-size: 11px; line-height: 1.8; }
+    .qrcard p { justify-self: stretch; text-align: center; color: var(--text-muted); font-size: 11px; line-height: 1.8; white-space: nowrap; letter-spacing: .1em; }
     .intro__foot { display: grid; gap: var(--s2); }
+    .intro__foot .t-meta { white-space: nowrap; }
     .intro__foot .proto { color: var(--accent); font-size: 12px; }
     .restart { position: fixed; top: clamp(14px, 2.4vh, 26px); right: var(--pad); z-index: 50; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--text-muted); font: inherit; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer; transition: color .2s, border-color .2s, background .2s; }
     .restart:hover, .restart:focus-visible { color: var(--text); border-color: var(--text-muted); }
@@ -184,7 +185,7 @@
     .podium__steps { border-bottom: 1px solid var(--line); }
 
     @media (max-width: 1500px) { .board__motto { display: none; } }
-    @media (max-height: 800px) { .race { gap: var(--s2); } }
+    @media (max-height: 800px) { .race { gap: var(--s2); } .intro { gap: 12px; } .how { gap: 8px; } }
     @media (max-height: 760px) { .how { display: none; } .intro__claim { line-height: 1.7; } }
     @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 3s; } .char.is-new img, .pawn.is-in, .overlay__n { animation: none; } }
   </style>
@@ -199,19 +200,19 @@
     <!-- Sinistra: come entrare -->
     <section class="intro" aria-labelledby="game-title">
       <h1 id="game-title" class="brandmark">Zoom<em>Race</em></h1>
-      <p class="t-meta intro__claim">Quanto ci metti a riconoscere i grandi brand?</p>
+      <p class="t-meta intro__claim" data-fit>Quanto ci metti a riconoscere i grandi brand?</p>
       <hr class="rule">
       <ol class="how">
-        <li><b>1</b><span>Inquadra<br>il QR code</span></li>
-        <li><b>2</b><span>Scegli il tuo<br>personaggio</span></li>
+        <li><b>1</b><span>Inquadra il QR code</span></li>
+        <li><b>2</b><span>Scegli il tuo personaggio</span></li>
         <li><b>3</b><span>Preparati a giocare</span></li>
       </ol>
       <div class="qrcard">
         <div class="qr"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 43 43" class="qr__svg" role="img" aria-label="QR code per entrare in gara" shape-rendering="crispEdges"><path fill="#f3efe7" d="M0 0h43v43h-43z"/><path class="qrline" stroke="#080b0b" d="M3 3.5h7m2 0h1m1 0h2m2 0h1m5 0h1m1 0h1m4 0h1m1 0h7m-37 1h1m5 0h1m6 0h1m2 0h1m3 0h1m5 0h3m1 0h1m5 0h1m-37 1h1m1 0h3m1 0h1m1 0h5m1 0h1m6 0h1m4 0h1m1 0h1m1 0h1m1 0h3m1 0h1m-37 1h1m1 0h3m1 0h1m1 0h1m3 0h4m1 0h1m2 0h1m1 0h5m3 0h1m1 0h3m1 0h1m-37 1h1m1 0h3m1 0h1m1 0h5m2 0h7m1 0h1m1 0h1m2 0h1m1 0h1m1 0h3m1 0h1m-37 1h1m5 0h1m1 0h2m1 0h1m2 0h2m1 0h1m7 0h3m2 0h1m5 0h1m-37 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-29 1h4m2 0h5m2 0h1m6 0h1m-29 1h1m1 0h5m2 0h1m2 0h3m1 0h1m2 0h1m2 0h5m3 0h5m-32 1h1m1 0h1m1 0h1m3 0h5m2 0h1m1 0h5m3 0h2m1 0h1m3 0h1m-35 1h2m2 0h3m1 0h4m1 0h6m1 0h2m1 0h8m3 0h2m-36 1h2m2 0h1m2 0h1m1 0h1m2 0h1m1 0h1m2 0h5m3 0h1m4 0h1m1 0h1m2 0h1m-35 1h1m1 0h5m1 0h2m1 0h3m1 0h3m2 0h6m1 0h8m-36 1h1m1 0h3m1 0h2m1 0h4m2 0h1m1 0h4m1 0h4m1 0h1m2 0h1m-32 1h7m5 0h1m1 0h3m1 0h1m6 0h4m1 0h4m1 0h2m-35 1h2m3 0h3m2 0h1m1 0h1m5 0h2m4 0h2m3 0h2m3 0h1m-37 1h4m2 0h2m1 0h1m2 0h1m2 0h1m2 0h1m3 0h1m1 0h3m2 0h2m1 0h1m1 0h3m-36 1h2m1 0h1m2 0h2m2 0h3m1 0h3m3 0h1m1 0h1m2 0h1m1 0h1m2 0h1m2 0h2m-34 1h2m2 0h1m1 0h3m1 0h1m4 0h1m3 0h2m2 0h1m1 0h2m3 0h1m2 0h2m-37 1h1m6 0h2m1 0h1m1 0h3m1 0h1m1 0h1m2 0h2m1 0h1m2 0h1m1 0h3m4 0h1m-37 1h1m5 0h1m2 0h3m2 0h1m1 0h2m2 0h1m1 0h5m2 0h2m1 0h3m-35 1h5m4 0h1m2 0h1m3 0h8m4 0h2m3 0h1m1 0h1m-36 1h1m2 0h1m1 0h4m6 0h3m2 0h2m3 0h1m1 0h3m1 0h3m1 0h2m-37 1h2m1 0h1m3 0h1m2 0h9m2 0h4m1 0h4m1 0h2m2 0h1m-36 1h1m1 0h1m3 0h2m1 0h3m2 0h3m2 0h1m2 0h5m3 0h3m1 0h1m1 0h1m-37 1h1m1 0h2m1 0h1m4 0h1m2 0h1m1 0h1m1 0h2m2 0h1m1 0h1m4 0h1m2 0h1m-32 1h1m1 0h1m2 0h5m2 0h1m2 0h2m1 0h1m1 0h2m5 0h1m1 0h2m1 0h2m1 0h2m-37 1h1m1 0h3m2 0h1m1 0h1m1 0h1m1 0h3m3 0h3m4 0h1m3 0h2m3 0h2m-37 1h1m1 0h9m2 0h1m1 0h1m1 0h1m1 0h1m3 0h12m-27 1h1m1 0h2m1 0h2m1 0h1m1 0h3m2 0h1m3 0h2m3 0h2m1 0h1m-36 1h7m2 0h2m1 0h1m2 0h2m1 0h1m1 0h1m1 0h1m2 0h1m2 0h1m1 0h1m1 0h1m1 0h3m-37 1h1m5 0h1m1 0h1m1 0h2m2 0h1m1 0h1m2 0h3m2 0h1m1 0h1m1 0h1m3 0h2m1 0h2m-37 1h1m1 0h3m1 0h1m1 0h1m1 0h1m2 0h1m4 0h1m3 0h11m1 0h1m-35 1h1m1 0h3m1 0h1m1 0h2m1 0h1m2 0h4m1 0h1m3 0h2m4 0h2m1 0h2m2 0h1m-37 1h1m1 0h3m1 0h1m1 0h1m1 0h1m2 0h2m2 0h1m4 0h1m2 0h3m7 0h2m-37 1h1m5 0h1m2 0h2m3 0h1m1 0h1m3 0h2m2 0h1m3 0h2m2 0h1m3 0h1m-37 1h7m1 0h2m1 0h4m2 0h2m3 0h5m2 0h1m2 0h1m1 0h3"/></svg></div>
-        <p class="t-meta">La gara inizierà quando<br>tutti i giocatori<br>saranno pronti.</p>
+        <p class="t-meta" data-fit>La gara inizierà quando<br>tutti i giocatori saranno pronti.</p>
       </div>
       <div class="intro__foot">
-        <p class="t-meta muted">Dettagli. Istinto. Velocità.</p>
+        <p class="t-meta muted" data-fit>Dettagli. Istinto. Velocità.</p>
         <p class="proto" data-mode-note></p>
         <button type="button" class="restart" data-restart>Ricomincia da zero</button>
       </div>
@@ -554,6 +555,20 @@
       requestAnimationFrame(function () { fig.style.setProperty("--zoom", 1); fig.style.setProperty("--blur", "0px"); });
       return wait(T.reveal);
     }
+
+    /* Testi su una riga sola nella colonna sinistra: si rimpiccioliscono se non entrano */
+    function fitLines() {
+      Array.prototype.forEach.call(document.querySelectorAll("[data-fit]"), function (el) {
+        el.style.fontSize = "";
+        var size = parseFloat(getComputedStyle(el).fontSize);
+        el.style.whiteSpace = "";
+        while (size > 10 && el.scrollWidth > el.clientWidth + 1) { size -= 0.5; el.style.fontSize = size + "px"; }
+        if (el.scrollWidth > el.clientWidth + 1) el.style.whiteSpace = "normal";   // schermi stretti: meglio due righe che un testo illeggibile
+      });
+    }
+    fitLines();
+    window.addEventListener("resize", fitLines);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitLines);
 
     /* Il nome del brand non si spezza mai: se una parola non entra, il testo si rimpicciolisce */
     function fitBrand() {
