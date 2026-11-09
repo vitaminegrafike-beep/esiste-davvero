@@ -45,7 +45,8 @@
     .intro__foot { display: grid; gap: var(--s2); }
     .intro__foot .t-meta { white-space: nowrap; }
     .intro__foot .proto { color: var(--accent); font-size: 12px; }
-    .restart { position: fixed; top: clamp(14px, 2.4vh, 26px); right: var(--pad); z-index: 50; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--text-muted); font: inherit; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer; transition: color .2s, border-color .2s, background .2s; }
+    .topctl { position: fixed; top: clamp(14px, 2.4vh, 26px); right: var(--pad); z-index: 50; display: flex; gap: 8px; }
+    .restart { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--text-muted); font: inherit; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer; transition: color .2s, border-color .2s, background .2s; }
     .restart:hover, .restart:focus-visible { color: var(--text); border-color: var(--text-muted); }
     .restart.is-armed { color: #080B0B; background: #C78E78; border-color: #C78E78; }
 
@@ -214,7 +215,10 @@
       <div class="intro__foot">
         <p class="t-meta muted" data-fit>Dettagli. Istinto. Velocità.</p>
         <p class="proto" data-mode-note></p>
-        <button type="button" class="restart" data-restart>Ricomincia da zero</button>
+        <div class="topctl">
+          <button type="button" class="restart" data-sound aria-pressed="true">Audio sì</button>
+          <button type="button" class="restart" data-restart>Ricomincia da zero</button>
+        </div>
       </div>
     </section>
 
@@ -287,6 +291,32 @@
     var params = new URLSearchParams(location.search);
     var BOTS = params.has("bots") ? Math.max(0, Math.min(MAX, +params.get("bots") || 0)) : (NET.mode === "local" ? 10 : 0);
     var REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /* ---------- Suoni (solo regia, generati nel browser) ---------- */
+    var actx = null, soundOn = true;
+    try { soundOn = localStorage.getItem("zr-sound") !== "off"; } catch (e) {}
+    function unlockAudio() {               // il browser concede l'audio dopo un clic
+      try {
+        if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+        if (actx.state === "suspended") actx.resume();
+      } catch (e) {}
+    }
+    document.addEventListener("pointerdown", unlockAudio);
+    document.addEventListener("keydown", unlockAudio);
+    function beep(freq, dur, vol) {
+      if (!soundOn || !actx || actx.state !== "running") return;
+      var t = actx.currentTime, o = actx.createOscillator(), g = actx.createGain();
+      o.type = "sine"; o.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(vol, t + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t + dur + 0.02);
+    }
+    var SFX = {
+      count: function () { beep(880, 0.16, 0.35); },                                   // bip del conto alla rovescia
+      go: function () { beep(1320, 0.5, 0.45); },                                       // GO!
+      tick: function () { beep(640, 0.07, 0.18); }                                      // ultimi secondi del round
+    };
 
     var $ = function (s) { return document.querySelector(s); };
     var panel = $("[data-panel]"), charsEl = $("[data-chars]"), pawnsEl = $("[data-pawns]"), roadEl = $("[data-road]");
@@ -503,7 +533,8 @@
       var el = $("[data-cd]"), k = 5;
       return new Promise(function (done) {
         (function step() {
-          if (k === 0) { done(); return; }
+          if (k === 0) { SFX.go(); done(); return; }
+          if (k <= 3) SFX.count();
           el.textContent = k--; el.classList.remove("is-pop"); void el.offsetWidth; if (!REDUCED) el.classList.add("is-pop");
           setTimeout(step, 1000);
         })();
@@ -523,8 +554,11 @@
           updateAnswered();
           botsAnswer(n);
           return new Promise(function (done) {        // si chiude quando hanno risposto tutti o allo scadere
+            var lastTick = 0;
             (function check() {
               var all = players.length > 0 && answeredCount(n) >= players.length;
+              var left = Math.ceil((g.ends_ms - NET.now()) / 1000);
+              if (!all && left >= 1 && left <= 3 && left !== lastTick) { lastTick = left; SFX.tick(); }
               if (all || NET.now() >= g.ends_ms + T.grace) { setTimeout(done, all ? 500 : 0); return; }
               setTimeout(check, 150);
             })();
@@ -671,6 +705,15 @@
 
     /* Ricomincia: chiude la gara in corso (i telefoni cercano da soli la nuova) e riparte dalla lobby.
        Primo clic arma il pulsante, il secondo entro 4 s conferma. */
+    var soundBtn = $("[data-sound]");
+    function paintSound() { soundBtn.textContent = soundOn ? "Audio sì" : "Audio no"; soundBtn.setAttribute("aria-pressed", String(soundOn)); }
+    paintSound();
+    soundBtn.addEventListener("click", function () {
+      soundOn = !soundOn; paintSound();
+      try { localStorage.setItem("zr-sound", soundOn ? "on" : "off"); } catch (e) {}
+      if (soundOn) { unlockAudio(); SFX.count(); }
+    });
+
     var restartBtn = $("[data-restart]"), armed = null;
     restartBtn.addEventListener("click", function () {
       if (!armed) {
